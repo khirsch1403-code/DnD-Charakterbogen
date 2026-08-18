@@ -44,10 +44,12 @@ html, body {
 
 .sheet {
   position: relative;
-  width: min(96vw, var(--sheet-w));
-  aspect-ratio: 1414 / 2000;
+  /* A4 hochkant: 210mm x 297mm  (1:sqrt(2)) */
+  width: min(96vw, 210mm);
+  height: min(calc(96vw * 1.4142), 297mm);
+  aspect-ratio: 210 / 297;
   margin: 16px auto;
-  background: #fdfaf1;
+  background: #ffffff;
   box-shadow: 0 4px 20px rgba(0,0,0,0.25);
   overflow: hidden;
 }
@@ -279,39 +281,61 @@ html, body {
 }
 
 /* ============================================================
-   KALIBRIER-MODUS
+   KALIBRIER-MODUS – Drag & Resize
    ============================================================ */
-.sheet.calibrate .input-layer .field,
-.sheet.calibrate .input-layer input,
-.sheet.calibrate .input-layer textarea,
-.sheet.calibrate .input-layer label {
+.sheet.calibrate .draggable {
   outline: 1px dashed rgba(220, 30, 30, 0.9);
   background: rgba(255, 220, 220, 0.25);
+  cursor: move;
+  z-index: 15 !important;
 }
-.sheet.calibrate .portrait-drop {
+.sheet.calibrate .draggable.big {
   outline: 2px dashed rgba(30, 100, 220, 0.9);
   background: rgba(200, 220, 255, 0.2);
 }
-.sheet.calibrate .frame-overlay { opacity: 0.55; }
-.calibrate-hint {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.7); color: #fff; padding: 8px 14px; border-radius: 6px;
-  font-size: 14px; pointer-events: none;
-  display: none;
-  z-index: 20;
+.sheet.calibrate .draggable::after {
+  content: "";
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 12px; height: 12px;
+  background: rgba(220, 30, 30, 0.9);
+  cursor: nwse-resize;
+  z-index: 2;
 }
-.sheet.calibrate .calibrate-hint { display: block; }
+.sheet.calibrate .draggable.dragging {
+  outline: 2px solid #ff0;
+  background: rgba(255, 255, 0, 0.3);
+}
+.sheet.calibrate .frame-overlay { opacity: 0.45; }
+.sheet.calibrate input, .sheet.calibrate textarea {
+  pointer-events: none;
+}
+.sheet.calibrate .draggable {
+  pointer-events: auto !important;
+}
+.calibrate-hint {
+  position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.8); color: #fff; padding: 8px 14px; border-radius: 6px;
+  font-size: 13px; pointer-events: none;
+  display: none;
+  z-index: 200;
+}
+.sheet.calibrate ~ .calibrate-hint,
+body:has(.sheet.calibrate) .calibrate-hint { display: block; }
 
-/* --- Print --- */
+/* --- Print (A4) --- */
+@page { size: A4; margin: 0; }
 @media print {
   body { background: #fff; }
   .no-print { display: none !important; }
   .sheet {
     margin: 0;
-    width: 100%;
+    width: 210mm;
+    height: 297mm;
     box-shadow: none;
   }
   .input-layer input:focus,
   .input-layer textarea:focus { background: transparent; }
-  .sheet.calibrate .input-layer * { outline: none; background: transparent; }
+  .sheet.calibrate .draggable { outline: none; background: transparent; }
+  .sheet.calibrate .draggable::after { display: none; }
 }

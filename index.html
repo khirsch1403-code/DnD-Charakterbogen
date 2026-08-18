@@ -15,7 +15,12 @@
     </label>
     <button id="btn-print">Drucken / PDF</button>
     <button id="btn-reset">Zurücksetzen</button>
-    <button id="btn-calibrate">Felder einblenden (K)</button>
+    <button id="btn-calibrate">Kalibrier-Modus (K)</button>
+    <button id="btn-export-layout" title="Aktuelle Feld-Positionen als JSON herunterladen">Layout exportieren</button>
+    <label class="btn-like" title="Zuvor exportiertes Layout laden">
+      Layout laden
+      <input type="file" id="file-layout" accept="application/json" hidden />
+    </label>
     <span class="autosave-indicator" id="autosave-indicator">Auto-Speichern aktiv</span>
   </div>
 
@@ -150,12 +155,11 @@
 
     </div>
 
-    <!-- Kalibrier-Hinweis -->
-    <div class="calibrate-hint">Kalibrier-Modus: alle Eingabefelder rot umrandet</div>
-
     <!-- Oberste Ebene: Design-Bild (unveränderlich) -->
     <img class="frame-overlay" src="assets/frame.png" alt="" onerror="this.style.opacity=0.15;" />
   </div>
+
+  <div class="calibrate-hint">Kalibrier-Modus aktiv — Feld ziehen: verschieben · Rotes Eck ziehen: skalieren · dann "Layout exportieren"</div>
 
   <script src="js/app.js"></script>
 </body>

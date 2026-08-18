@@ -207,6 +207,150 @@ function setupToolbar() {
       toggleCalibrate();
     }
   });
+
+  $('btn-export-layout').addEventListener('click', exportLayout);
+  $('file-layout').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        applyLayout(JSON.parse(ev.target.result));
+        saveLayoutToLocalStorage();
+        alert('Layout geladen.');
+      } catch (err) {
+        alert('Layout-Datei konnte nicht gelesen werden: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
+// ============================================================
+// Kalibrier-Drag & Layout
+// ============================================================
+
+// Alle verschiebbaren Elemente. Große Blöcke bekommen '.big' zusätzlich.
+const DRAGGABLES = [
+  { sel: '.field-name' }, { sel: '.field-level' },
+  { sel: '.death-saves.failures', big: true }, { sel: '.death-saves.successes', big: true },
+  { sel: '.field-str' }, { sel: '.mod-str' }, { sel: '.save-str-check' }, { sel: '.save-str' },
+  { sel: '.field-dex' }, { sel: '.mod-dex' }, { sel: '.save-dex-check' }, { sel: '.save-dex' },
+  { sel: '.field-con' }, { sel: '.mod-con' }, { sel: '.save-con-check' }, { sel: '.save-con' },
+  { sel: '.field-int' }, { sel: '.mod-int' }, { sel: '.save-int-check' }, { sel: '.save-int' },
+  { sel: '.field-wis' }, { sel: '.mod-wis' }, { sel: '.save-wis-check' }, { sel: '.save-wis' },
+  { sel: '.field-cha' }, { sel: '.mod-cha' }, { sel: '.save-cha-check' }, { sel: '.save-cha' },
+  { sel: '.portrait-drop', big: true },
+  { sel: '.field-speed' }, { sel: '.field-initiative' },
+  { sel: '.field-size' }, { sel: '.field-passive' },
+  { sel: '.field-hp-current' }, { sel: '.field-hp-max' },
+  { sel: '.field-ac' }, { sel: '.field-temp-hp' },
+  { sel: '.field-prof-bonus' }, { sel: '.field-hit-dice-current' },
+  { sel: '.field-hit-dice-max' }, { sel: '.field-inspiration' },
+  { sel: '.jack-of-all' },
+  { sel: '.skills', big: true }, { sel: '.weapons', big: true }, { sel: '.features', big: true },
+];
+
+const LAYOUT_STORAGE_KEY = 'dnd-charakterbogen-layout-v1';
+
+function setupCalibrationDrag() {
+  const sheet = document.getElementById('sheet');
+
+  DRAGGABLES.forEach(({ sel, big }) => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    el.classList.add('draggable');
+    if (big) el.classList.add('big');
+    el.dataset.selector = sel;
+
+    el.addEventListener('mousedown', (e) => {
+      if (!sheet.classList.contains('calibrate')) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const sheetRect = sheet.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const nearBR = (elRect.right - e.clientX < 14) && (elRect.bottom - e.clientY < 14);
+      const mode = nearBR ? 'resize' : 'move';
+
+      const startLeftPct = (elRect.left - sheetRect.left) / sheetRect.width * 100;
+      const startTopPct  = (elRect.top  - sheetRect.top)  / sheetRect.height * 100;
+      const startWPct    = elRect.width  / sheetRect.width * 100;
+      const startHPct    = elRect.height / sheetRect.height * 100;
+      const startX = e.clientX, startY = e.clientY;
+
+      el.classList.add('dragging');
+
+      const move = (ev) => {
+        const dxPct = (ev.clientX - startX) / sheetRect.width * 100;
+        const dyPct = (ev.clientY - startY) / sheetRect.height * 100;
+        if (mode === 'move') {
+          el.style.left = (startLeftPct + dxPct).toFixed(2) + '%';
+          el.style.top  = (startTopPct  + dyPct).toFixed(2) + '%';
+        } else {
+          el.style.width  = Math.max(0.5, startWPct + dxPct).toFixed(2) + '%';
+          el.style.height = Math.max(0.5, startHPct + dyPct).toFixed(2) + '%';
+        }
+      };
+      const up = () => {
+        el.classList.remove('dragging');
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup', up);
+        saveLayoutToLocalStorage();
+      };
+      document.addEventListener('mousemove', move);
+      document.addEventListener('mouseup', up);
+    });
+  });
+}
+
+function collectLayout() {
+  const layout = {};
+  DRAGGABLES.forEach(({ sel }) => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    layout[sel] = {
+      left: el.style.left || null,
+      top: el.style.top || null,
+      width: el.style.width || null,
+      height: el.style.height || null,
+    };
+  });
+  return layout;
+}
+
+function applyLayout(layout) {
+  if (!layout) return;
+  Object.entries(layout).forEach(([sel, css]) => {
+    const el = document.querySelector(sel);
+    if (!el || !css) return;
+    ['left','top','width','height'].forEach((prop) => {
+      if (css[prop]) el.style[prop] = css[prop];
+    });
+  });
+}
+
+function exportLayout() {
+  const layout = collectLayout();
+  const blob = new Blob([JSON.stringify(layout, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'layout.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function saveLayoutToLocalStorage() {
+  try { localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(collectLayout())); }
+  catch (e) { console.warn(e); }
+}
+
+function loadLayoutFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem(LAYOUT_STORAGE_KEY);
+    if (raw) applyLayout(JSON.parse(raw));
+  } catch (e) { console.warn(e); }
 }
 
 // ---- Init ----
@@ -225,6 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
     saveToLocalStorage();
   });
 
+  setupCalibrationDrag();
+  loadLayoutFromLocalStorage();
   loadFromLocalStorage();
   recalcAll();
 });
