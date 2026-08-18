@@ -1,10 +1,7 @@
 :root {
   --sheet-w: 1414px;
-  --sheet-h: 2000px;
-  --sheet-ratio: calc(2000 / 1414);
   --ink: #1a1a1a;
-  --field-bg: rgba(255, 255, 255, 0.0);
-  --field-focus: rgba(255, 220, 100, 0.25);
+  --field-focus: rgba(255, 220, 100, 0.35);
 }
 
 * { box-sizing: border-box; }
@@ -45,7 +42,6 @@ html, body {
   color: #9ec99e;
 }
 
-/* Bogen-Container: feste Aspect Ratio, skaliert per width */
 .sheet {
   position: relative;
   width: min(96vw, var(--sheet-w));
@@ -56,7 +52,6 @@ html, body {
   overflow: hidden;
 }
 
-/* Design-Bild oben, klickt durch */
 .frame-overlay {
   position: absolute;
   inset: 0;
@@ -67,17 +62,15 @@ html, body {
   z-index: 10;
 }
 
-/* Eingabeebene darunter */
 .input-layer {
   position: absolute;
   inset: 0;
   z-index: 1;
 }
 
-/* Standard-Feld: transparent, wird nur beim Fokus sichtbar */
 .field, .input-layer input, .input-layer textarea {
   position: absolute;
-  background: var(--field-bg);
+  background: transparent;
   border: none;
   color: var(--ink);
   font-family: inherit;
@@ -98,200 +91,218 @@ html, body {
   height: 100%;
   margin: 0;
   cursor: pointer;
+  accent-color: #444;
 }
 
-/* ====== POSITIONIERUNG (Prozentwerte auf Bogen) ======
-   Alle Werte sind Näherungen, die nach dem Einfügen des
-   frame.png in dieser Datei nachjustiert werden können.
-*/
+/* ============================================================
+   POSITIONIERUNG (Prozentwerte relativ zum 1414x2000 Bogen)
+   ============================================================ */
 
-/* Charaktername (großes Banner oben mitte) */
+/* --- KOPF: Charakterlevel + Name --- */
+.field-level {
+  left: 46%; top: 1.2%;
+  width: 8%; height: 2.3%;
+  font-size: 20px; font-style: italic;
+}
 .field-name {
-  left: 30%; top: 4.5%;
-  width: 40%; height: 3%;
+  left: 28%; top: 5.5%;
+  width: 44%; height: 3.2%;
   font-size: 26px; font-style: italic;
 }
 
-/* Charakterlevel (kleines Banner darüber mitte) */
-.field-level {
-  left: 47%; top: 1.5%;
-  width: 6%; height: 2.5%;
-  font-size: 20px;
-}
-
-/* Death saves */
+/* --- DEATH SAVES (6 Kreise, links Fehlschlag / rechts Erfolg) --- */
 .death-saves {
   position: absolute;
-  top: 9.5%;
-  display: flex;
-  gap: 1.4%;
+  top: 11.6%;
   height: 2.2%;
+  display: flex;
+  gap: 1.3%;
 }
-.death-saves.failures { left: 38.5%; }
-.death-saves.successes { left: 54%; }
+.death-saves.failures  { left: 40.8%; }
+.death-saves.successes { left: 51.6%; }
 .death-saves label {
   position: relative;
-  width: 22px; height: 22px;
+  width: 1.8%; height: 100%;
+  min-width: 18px; min-height: 18px;
 }
+.sheet { --_ds-w: calc(var(--sheet-w) * 0.018); }
+.death-saves label { width: 22px; }
 
-/* ATTRIBUTE — linkes Banner (STR/DEX/CON) */
-.field-str { left: 3%;  top: 15.0%; width: 10%; height: 3%; font-size: 22px; }
-.mod-str   { left: 3%;  top: 18.0%; width: 10%; height: 2%; font-size: 16px; }
-.save-str-check { left: 4.2%; top: 21.4%; width: 1.5%; height: 1.5%; }
-.save-str  { left: 7%;  top: 21.0%; width: 6%;  height: 2%; font-size: 16px; }
+/* --- LINKES BANNER: STR / DEX / CON --- */
+/* Banner-Inhalt läuft ungefähr von y=13% bis y=57% */
 
-.field-dex { left: 3%;  top: 27.0%; width: 10%; height: 3%; font-size: 22px; }
-.mod-dex   { left: 3%;  top: 30.0%; width: 10%; height: 2%; font-size: 16px; }
-.save-dex-check { left: 4.2%; top: 33.4%; width: 1.5%; height: 1.5%; }
-.save-dex  { left: 7%;  top: 33.0%; width: 6%;  height: 2%; font-size: 16px; }
+/* STR (Sektion 1) */
+.field-str      { left: 5%;   top: 19.2%; width: 8%;  height: 2.8%; font-size: 22px; }
+.mod-str        { left: 5%;   top: 22.0%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
+.save-str-check { left: 5.4%; top: 24.6%; width: 1.4%; height: 1.4%; }
+.save-str       { left: 7.5%; top: 24.3%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-.field-con { left: 3%;  top: 39.0%; width: 10%; height: 3%; font-size: 22px; }
-.mod-con   { left: 3%;  top: 42.0%; width: 10%; height: 2%; font-size: 16px; }
-.save-con-check { left: 4.2%; top: 45.4%; width: 1.5%; height: 1.5%; }
-.save-con  { left: 7%;  top: 45.0%; width: 6%;  height: 2%; font-size: 16px; }
+/* DEX (Sektion 2) */
+.field-dex      { left: 5%;   top: 32.5%; width: 8%;  height: 2.8%; font-size: 22px; }
+.mod-dex        { left: 5%;   top: 35.3%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
+.save-dex-check { left: 5.4%; top: 37.9%; width: 1.4%; height: 1.4%; }
+.save-dex       { left: 7.5%; top: 37.6%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-/* ATTRIBUTE — rechtes Banner (INT/WIS/CHA) */
-.field-int { left: 87%; top: 15.0%; width: 10%; height: 3%; font-size: 22px; }
-.mod-int   { left: 87%; top: 18.0%; width: 10%; height: 2%; font-size: 16px; }
-.save-int-check { left: 88.2%; top: 21.4%; width: 1.5%; height: 1.5%; }
-.save-int  { left: 91%; top: 21.0%; width: 6%;  height: 2%; font-size: 16px; }
+/* CON (Sektion 3) */
+.field-con      { left: 5%;   top: 46.0%; width: 8%;  height: 2.8%; font-size: 22px; }
+.mod-con        { left: 5%;   top: 48.8%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
+.save-con-check { left: 5.4%; top: 51.4%; width: 1.4%; height: 1.4%; }
+.save-con       { left: 7.5%; top: 51.1%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-.field-wis { left: 87%; top: 27.0%; width: 10%; height: 3%; font-size: 22px; }
-.mod-wis   { left: 87%; top: 30.0%; width: 10%; height: 2%; font-size: 16px; }
-.save-wis-check { left: 88.2%; top: 33.4%; width: 1.5%; height: 1.5%; }
-.save-wis  { left: 91%; top: 33.0%; width: 6%;  height: 2%; font-size: 16px; }
+/* --- RECHTES BANNER: INT / WIS / CHA (gespiegelt) --- */
+.field-int      { left: 87%;   top: 19.2%; width: 8%;  height: 2.8%; font-size: 22px; }
+.mod-int        { left: 87%;   top: 22.0%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
+.save-int-check { left: 87.4%; top: 24.6%; width: 1.4%; height: 1.4%; }
+.save-int       { left: 89.5%; top: 24.3%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-.field-cha { left: 87%; top: 39.0%; width: 10%; height: 3%; font-size: 22px; }
-.mod-cha   { left: 87%; top: 42.0%; width: 10%; height: 2%; font-size: 16px; }
-.save-cha-check { left: 88.2%; top: 45.4%; width: 1.5%; height: 1.5%; }
-.save-cha  { left: 91%; top: 45.0%; width: 6%;  height: 2%; font-size: 16px; }
+.field-wis      { left: 87%;   top: 32.5%; width: 8%;  height: 2.8%; font-size: 22px; }
+.mod-wis        { left: 87%;   top: 35.3%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
+.save-wis-check { left: 87.4%; top: 37.9%; width: 1.4%; height: 1.4%; }
+.save-wis       { left: 89.5%; top: 37.6%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-/* Zentrales Portrait */
+.field-cha      { left: 87%;   top: 46.0%; width: 8%;  height: 2.8%; font-size: 22px; }
+.mod-cha        { left: 87%;   top: 48.8%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
+.save-cha-check { left: 87.4%; top: 51.4%; width: 1.4%; height: 1.4%; }
+.save-cha       { left: 89.5%; top: 51.1%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
+
+/* --- ZENTRALES PORTRAIT --- */
 .portrait-drop {
   position: absolute;
-  left: 24%; top: 12%;
-  width: 52%; height: 26%;
-  background: rgba(255,255,255,0.0);
+  left: 23.5%; top: 14%;
+  width: 53%;  height: 26%;
+  background: transparent;
   border-radius: 12px;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
 }
-.portrait-drop img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: none;
-}
+.portrait-drop img { width: 100%; height: 100%; object-fit: cover; display: none; }
 .portrait-drop.has-image img { display: block; }
 .portrait-drop.has-image .portrait-hint { display: none; }
-.portrait-hint {
-  color: #999;
-  font-style: italic;
-  font-size: 16px;
-}
+.portrait-hint { color: #b0a68c; font-style: italic; font-size: 16px; pointer-events: none; }
 .portrait-drop.drag-over {
-  background: rgba(200,220,255,0.3);
+  background: rgba(200,220,255,0.25);
   outline: 2px dashed #6a8bd6;
 }
 
-/* Bewegung / Initiative — links von Portrait */
-.field-speed      { left: 17.5%; top: 15%;   width: 6.5%; height: 3%; font-size: 16px; }
-.field-initiative { left: 17.5%; top: 22%;   width: 6.5%; height: 3%; font-size: 16px; }
+/* --- Bewegung / Initiative (kleine Boxen links des Portraits) --- */
+.field-speed      { left: 17.5%; top: 21.5%; width: 6%; height: 2.6%; font-size: 16px; }
+.field-initiative { left: 17.5%; top: 30.8%; width: 6%; height: 2.6%; font-size: 16px; }
 
-/* Größe / Passive Wahrnehmung — rechts von Portrait */
-.field-size       { left: 76%;   top: 15%;   width: 6.5%; height: 3%; font-size: 16px; }
-.field-passive    { left: 76%;   top: 22%;   width: 6.5%; height: 3%; font-size: 16px; }
+/* --- Größe / Passive Wahrnehmung (kleine Boxen rechts) --- */
+.field-size    { left: 76.5%; top: 21.5%; width: 6%; height: 2.6%; font-size: 16px; }
+.field-passive { left: 76.5%; top: 30.8%; width: 6%; height: 2.6%; font-size: 16px; }
 
-/* HP / AC / Temp HP (Herz / Schild / Herz) */
-.field-hp-current { left: 25%; top: 33.5%; width: 6%; height: 2.5%; font-size: 20px; }
-.field-hp-max     { left: 25%; top: 36.5%; width: 6%; height: 2.5%; font-size: 20px; }
-.field-ac         { left: 47%; top: 34.5%; width: 6%; height: 2.5%; font-size: 22px; }
-.field-temp-hp    { left: 69%; top: 34.5%; width: 6%; height: 3%;   font-size: 20px; }
+/* --- HP / AC / TEMP HP (Herz / Schild / Herz) --- */
+.field-hp-current { left: 28%;   top: 43.0%; width: 6%;  height: 2.4%; font-size: 20px; }
+.field-hp-max     { left: 28%;   top: 45.6%; width: 6%;  height: 2.4%; font-size: 20px; }
+.field-ac         { left: 47%;   top: 45.5%; width: 6%;  height: 2.6%; font-size: 22px; }
+.field-temp-hp    { left: 66%;   top: 44.3%; width: 6%;  height: 2.8%; font-size: 20px; }
 
-/* Übungsbonus / Trefferwürfel / Inspiration */
-.field-prof-bonus         { left: 27%; top: 43%;   width: 6%; height: 3%; font-size: 20px; }
-.field-hit-dice-current   { left: 46%; top: 43.5%; width: 5%; height: 2.2%; font-size: 16px; }
-.field-hit-dice-max       { left: 46%; top: 45.7%; width: 5%; height: 2.2%; font-size: 16px; }
-.field-inspiration        { position: absolute; left: 67.5%; top: 44.5%; width: 3%; height: 2.5%; }
+/* --- Übungsbonus / Trefferwürfel / Inspiration --- */
+.field-prof-bonus       { left: 33%;   top: 53.7%; width: 6%; height: 3.5%; font-size: 22px; }
+.field-hit-dice-current { left: 46.5%; top: 53.2%; width: 5%; height: 2.2%; font-size: 16px; }
+.field-hit-dice-max     { left: 46.5%; top: 55.5%; width: 5%; height: 2.2%; font-size: 16px; }
+.field-inspiration      { position: absolute; left: 59.5%; top: 54.6%; width: 3%; height: 3%; }
 
-/* Alleskönner (Jack of All Trades) */
+/* --- Alleskönner (Jack of All Trades) --- */
 .jack-of-all {
   position: absolute;
-  left: 3.3%; top: 50.5%;
+  left: 3.5%; top: 61.9%;
   width: 1.6%; height: 1.6%;
 }
 
-/* Fertigkeiten-Liste */
+/* --- Fertigkeiten-Liste (18 Reihen) --- */
 .skills {
   position: absolute;
-  left: 3%; top: 52.8%;
-  width: 32%; height: 44%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15%;
+  left: 3%;  top: 63.9%;
+  width: 32%; height: 33%;
+  display: grid;
+  grid-template-rows: repeat(18, 1fr);
 }
 .skill-row {
   display: grid;
-  grid-template-columns: 22px 1fr 40px;
+  grid-template-columns: 24px 1fr 40px;
   align-items: center;
-  height: 2.35%;
-  min-height: 24px;
   gap: 4px;
   padding: 0 4px;
 }
 .skill-row input[type="checkbox"] {
   position: static;
-  width: 16px; height: 16px;
+  width: 15px; height: 15px;
   margin: 0;
+  accent-color: #444;
 }
 .skill-row .skill-name { font-style: italic; font-size: 15px; padding-left: 4px; }
-.skill-row .skill-value {
-  text-align: right;
-  font-size: 15px;
-  padding-right: 4px;
-}
+.skill-row .skill-value { text-align: right; font-size: 15px; padding-right: 4px; }
 
-/* Waffen-Tabelle */
+/* --- Waffen-Tabelle (5 Zeilen) --- */
 .weapons {
   position: absolute;
-  left: 38%; top: 54.5%;
+  left: 38%; top: 65.5%;
   width: 59%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.4%;
 }
 .weapon-row {
   display: grid;
-  grid-template-columns: 2fr 1.2fr 1fr 1fr 2fr;
+  grid-template-columns: 2.2fr 1.4fr 1fr 1fr 2fr;
   gap: 4px;
+  height: 2.05%;
+  min-height: 22px;
 }
 .weapon-row input {
   position: static;
-  height: 26px;
-  border-bottom: 1px dotted #999;
-  font-size: 14px;
+  height: 100%;
+  border: none;
+  border-bottom: none;
+  font-size: 13px;
   text-align: left;
-  padding: 2px 4px;
+  padding: 0 4px;
+  background: transparent;
 }
 
-/* Klassenmerkmal und Fähigkeiten */
+/* --- Klassenmerkmal und Fähigkeiten --- */
 .features {
   position: absolute;
-  left: 38%; top: 68%;
-  width: 59%; height: 28%;
+  left: 38%; top: 79%;
+  width: 59%; height: 18%;
   border: none;
   background: transparent;
   resize: none;
-  font-size: 14px;
+  font-size: 13px;
   text-align: left;
-  padding: 8px;
+  padding: 4px 6px;
   font-family: inherit;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
-/* ====== Print ====== */
+/* ============================================================
+   KALIBRIER-MODUS
+   ============================================================ */
+.sheet.calibrate .input-layer .field,
+.sheet.calibrate .input-layer input,
+.sheet.calibrate .input-layer textarea,
+.sheet.calibrate .input-layer label {
+  outline: 1px dashed rgba(220, 30, 30, 0.9);
+  background: rgba(255, 220, 220, 0.25);
+}
+.sheet.calibrate .portrait-drop {
+  outline: 2px dashed rgba(30, 100, 220, 0.9);
+  background: rgba(200, 220, 255, 0.2);
+}
+.sheet.calibrate .frame-overlay { opacity: 0.55; }
+.calibrate-hint {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.7); color: #fff; padding: 8px 14px; border-radius: 6px;
+  font-size: 14px; pointer-events: none;
+  display: none;
+  z-index: 20;
+}
+.sheet.calibrate .calibrate-hint { display: block; }
+
+/* --- Print --- */
 @media print {
   body { background: #fff; }
   .no-print { display: none !important; }
@@ -299,8 +310,8 @@ html, body {
     margin: 0;
     width: 100%;
     box-shadow: none;
-    page-break-after: always;
   }
   .input-layer input:focus,
   .input-layer textarea:focus { background: transparent; }
+  .sheet.calibrate .input-layer * { outline: none; background: transparent; }
 }

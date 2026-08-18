@@ -198,6 +198,15 @@ function setupToolbar() {
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   });
+
+  const toggleCalibrate = () => document.getElementById('sheet').classList.toggle('calibrate');
+  $('btn-calibrate').addEventListener('click', toggleCalibrate);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'k' || e.key === 'K') {
+      if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+      toggleCalibrate();
+    }
+  });
 }
 
 // ---- Init ----
