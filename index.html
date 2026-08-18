@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D&D Charakterbogen</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="toolbar no-print">
+    <button id="btn-save">Als JSON speichern</button>
+    <label class="btn-like">
+      Laden aus JSON
+      <input type="file" id="file-load" accept="application/json" hidden />
+    </label>
+    <button id="btn-print">Drucken / PDF</button>
+    <button id="btn-reset">Zurücksetzen</button>
+    <span class="autosave-indicator" id="autosave-indicator">Auto-Speichern aktiv</span>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <!-- Hintergrundebene: Eingabefelder -->
+    <div class="input-layer">
+
+      <!-- Charaktername (großes Banner oben) -->
+      <input type="text" class="field field-name" id="char-name" placeholder="Charaktername" data-save />
+
+      <!-- Charakterlevel -->
+      <input type="number" min="1" max="20" class="field field-level" id="char-level" placeholder="1" data-save />
+
+      <!-- Death Saves: 3 Fehlschläge (links vom Totenkopf), 3 Erfolge (rechts) -->
+      <div class="death-saves failures">
+        <label><input type="checkbox" data-save id="ds-f1" /></label>
+        <label><input type="checkbox" data-save id="ds-f2" /></label>
+        <label><input type="checkbox" data-save id="ds-f3" /></label>
+      </div>
+      <div class="death-saves successes">
+        <label><input type="checkbox" data-save id="ds-s1" /></label>
+        <label><input type="checkbox" data-save id="ds-s2" /></label>
+        <label><input type="checkbox" data-save id="ds-s3" /></label>
+      </div>
+
+      <!-- Attribute (linkes Banner: STR / DEX / CON) -->
+      <input type="number" class="field field-str" id="str-score" placeholder="10" data-save />
+      <div class="field mod-str" id="str-mod">+0</div>
+      <label class="save-check save-str-check"><input type="checkbox" id="str-save-prof" data-save /></label>
+      <div class="field save-str" id="str-save">+0</div>
+
+      <input type="number" class="field field-dex" id="dex-score" placeholder="10" data-save />
+      <div class="field mod-dex" id="dex-mod">+0</div>
+      <label class="save-check save-dex-check"><input type="checkbox" id="dex-save-prof" data-save /></label>
+      <div class="field save-dex" id="dex-save">+0</div>
+
+      <input type="number" class="field field-con" id="con-score" placeholder="10" data-save />
+      <div class="field mod-con" id="con-mod">+0</div>
+      <label class="save-check save-con-check"><input type="checkbox" id="con-save-prof" data-save /></label>
+      <div class="field save-con" id="con-save">+0</div>
+
+      <!-- Attribute (rechtes Banner: INT / WIS / CHA) -->
+      <input type="number" class="field field-int" id="int-score" placeholder="10" data-save />
+      <div class="field mod-int" id="int-mod">+0</div>
+      <label class="save-check save-int-check"><input type="checkbox" id="int-save-prof" data-save /></label>
+      <div class="field save-int" id="int-save">+0</div>
+
+      <input type="number" class="field field-wis" id="wis-score" placeholder="10" data-save />
+      <div class="field mod-wis" id="wis-mod">+0</div>
+      <label class="save-check save-wis-check"><input type="checkbox" id="wis-save-prof" data-save /></label>
+      <div class="field save-wis" id="wis-save">+0</div>
+
+      <input type="number" class="field field-cha" id="cha-score" placeholder="10" data-save />
+      <div class="field mod-cha" id="cha-mod">+0</div>
+      <label class="save-check save-cha-check"><input type="checkbox" id="cha-save-prof" data-save /></label>
+      <div class="field save-cha" id="cha-save">+0</div>
+
+      <!-- Zentrales Charakterbild -->
+      <label class="portrait-drop" id="portrait-drop">
+        <input type="file" id="portrait-input" accept="image/*" hidden />
+        <img id="portrait-img" alt="" />
+        <span class="portrait-hint">Bild hierher ziehen oder klicken</span>
+      </label>
+
+      <!-- Bewegung / Initiative / Größe / Passive Wahrnehmung -->
+      <input type="text" class="field field-speed" id="speed" placeholder="9 m" data-save />
+      <div class="field field-initiative" id="initiative">+0</div>
+      <input type="text" class="field field-size" id="size" placeholder="Mittel" data-save />
+      <div class="field field-passive" id="passive-perception">10</div>
+
+      <!-- HP / AC / Temp HP -->
+      <input type="number" class="field field-hp-current" id="hp-current" placeholder="0" data-save />
+      <input type="number" class="field field-hp-max" id="hp-max" placeholder="0" data-save />
+      <input type="number" class="field field-ac" id="ac" placeholder="10" data-save />
+      <input type="number" class="field field-temp-hp" id="temp-hp" placeholder="0" data-save />
+
+      <!-- Übungsbonus / Trefferwürfel / Inspiration -->
+      <div class="field field-prof-bonus" id="prof-bonus">+2</div>
+      <input type="text" class="field field-hit-dice-current" id="hit-dice-current" placeholder="1" data-save />
+      <input type="text" class="field field-hit-dice-max" id="hit-dice-max" placeholder="1d8" data-save />
+      <label class="field-inspiration">
+        <input type="checkbox" id="inspiration" data-save />
+      </label>
+
+      <!-- Alleskönner (Jack of All Trades) -->
+      <label class="jack-of-all"><input type="checkbox" id="jack-of-all" data-save /></label>
+
+      <!-- Fertigkeiten (Skills) -->
+      <div class="skills" id="skills"></div>
+
+      <!-- Waffen und Schadenszaubertricks (5 Zeilen) -->
+      <div class="weapons">
+        <div class="weapon-row">
+          <input type="text" placeholder="Name" data-save id="w1-name" />
+          <input type="text" placeholder="+0 / 0" data-save id="w1-bonus" />
+          <input type="text" placeholder="1d6" data-save id="w1-damage" />
+          <input type="text" placeholder="Art" data-save id="w1-type" />
+          <input type="text" placeholder="Notiz" data-save id="w1-note" />
+        </div>
+        <div class="weapon-row">
+          <input type="text" data-save id="w2-name" />
+          <input type="text" data-save id="w2-bonus" />
+          <input type="text" data-save id="w2-damage" />
+          <input type="text" data-save id="w2-type" />
+          <input type="text" data-save id="w2-note" />
+        </div>
+        <div class="weapon-row">
+          <input type="text" data-save id="w3-name" />
+          <input type="text" data-save id="w3-bonus" />
+          <input type="text" data-save id="w3-damage" />
+          <input type="text" data-save id="w3-type" />
+          <input type="text" data-save id="w3-note" />
+        </div>
+        <div class="weapon-row">
+          <input type="text" data-save id="w4-name" />
+          <input type="text" data-save id="w4-bonus" />
+          <input type="text" data-save id="w4-damage" />
+          <input type="text" data-save id="w4-type" />
+          <input type="text" data-save id="w4-note" />
+        </div>
+        <div class="weapon-row">
+          <input type="text" data-save id="w5-name" />
+          <input type="text" data-save id="w5-bonus" />
+          <input type="text" data-save id="w5-damage" />
+          <input type="text" data-save id="w5-type" />
+          <input type="text" data-save id="w5-note" />
+        </div>
+      </div>
+
+      <!-- Klassenmerkmal und Fähigkeiten -->
+      <textarea class="features" id="features" placeholder="Klassenmerkmale, Fähigkeiten, Traits ..." data-save></textarea>
+
+    </div>
+
+    <!-- Oberste Ebene: Design-Bild (unveränderlich) -->
+    <img class="frame-overlay" src="assets/frame.png" alt="" onerror="this.style.opacity=0.15;" />
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

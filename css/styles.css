@@ -1,0 +1,306 @@
+:root {
+  --sheet-w: 1414px;
+  --sheet-h: 2000px;
+  --sheet-ratio: calc(2000 / 1414);
+  --ink: #1a1a1a;
+  --field-bg: rgba(255, 255, 255, 0.0);
+  --field-focus: rgba(255, 220, 100, 0.25);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #d9d3c4;
+  font-family: 'Georgia', 'Segoe UI', serif;
+  color: var(--ink);
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  background: #2b2b2b;
+  color: #eee;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.toolbar button, .toolbar .btn-like {
+  background: #4a4a4a;
+  color: #fff;
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.toolbar button:hover, .toolbar .btn-like:hover { background: #5c5c5c; }
+.autosave-indicator {
+  margin-left: auto;
+  font-size: 12px;
+  color: #9ec99e;
+}
+
+/* Bogen-Container: feste Aspect Ratio, skaliert per width */
+.sheet {
+  position: relative;
+  width: min(96vw, var(--sheet-w));
+  aspect-ratio: 1414 / 2000;
+  margin: 16px auto;
+  background: #fdfaf1;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  overflow: hidden;
+}
+
+/* Design-Bild oben, klickt durch */
+.frame-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  z-index: 10;
+}
+
+/* Eingabeebene darunter */
+.input-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Standard-Feld: transparent, wird nur beim Fokus sichtbar */
+.field, .input-layer input, .input-layer textarea {
+  position: absolute;
+  background: var(--field-bg);
+  border: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 18px;
+  text-align: center;
+  outline: none;
+  padding: 2px;
+}
+.input-layer input:focus,
+.input-layer textarea:focus,
+.field:focus-within {
+  background: var(--field-focus);
+  border-radius: 3px;
+}
+.input-layer input[type="checkbox"] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ====== POSITIONIERUNG (Prozentwerte auf Bogen) ======
+   Alle Werte sind Näherungen, die nach dem Einfügen des
+   frame.png in dieser Datei nachjustiert werden können.
+*/
+
+/* Charaktername (großes Banner oben mitte) */
+.field-name {
+  left: 30%; top: 4.5%;
+  width: 40%; height: 3%;
+  font-size: 26px; font-style: italic;
+}
+
+/* Charakterlevel (kleines Banner darüber mitte) */
+.field-level {
+  left: 47%; top: 1.5%;
+  width: 6%; height: 2.5%;
+  font-size: 20px;
+}
+
+/* Death saves */
+.death-saves {
+  position: absolute;
+  top: 9.5%;
+  display: flex;
+  gap: 1.4%;
+  height: 2.2%;
+}
+.death-saves.failures { left: 38.5%; }
+.death-saves.successes { left: 54%; }
+.death-saves label {
+  position: relative;
+  width: 22px; height: 22px;
+}
+
+/* ATTRIBUTE — linkes Banner (STR/DEX/CON) */
+.field-str { left: 3%;  top: 15.0%; width: 10%; height: 3%; font-size: 22px; }
+.mod-str   { left: 3%;  top: 18.0%; width: 10%; height: 2%; font-size: 16px; }
+.save-str-check { left: 4.2%; top: 21.4%; width: 1.5%; height: 1.5%; }
+.save-str  { left: 7%;  top: 21.0%; width: 6%;  height: 2%; font-size: 16px; }
+
+.field-dex { left: 3%;  top: 27.0%; width: 10%; height: 3%; font-size: 22px; }
+.mod-dex   { left: 3%;  top: 30.0%; width: 10%; height: 2%; font-size: 16px; }
+.save-dex-check { left: 4.2%; top: 33.4%; width: 1.5%; height: 1.5%; }
+.save-dex  { left: 7%;  top: 33.0%; width: 6%;  height: 2%; font-size: 16px; }
+
+.field-con { left: 3%;  top: 39.0%; width: 10%; height: 3%; font-size: 22px; }
+.mod-con   { left: 3%;  top: 42.0%; width: 10%; height: 2%; font-size: 16px; }
+.save-con-check { left: 4.2%; top: 45.4%; width: 1.5%; height: 1.5%; }
+.save-con  { left: 7%;  top: 45.0%; width: 6%;  height: 2%; font-size: 16px; }
+
+/* ATTRIBUTE — rechtes Banner (INT/WIS/CHA) */
+.field-int { left: 87%; top: 15.0%; width: 10%; height: 3%; font-size: 22px; }
+.mod-int   { left: 87%; top: 18.0%; width: 10%; height: 2%; font-size: 16px; }
+.save-int-check { left: 88.2%; top: 21.4%; width: 1.5%; height: 1.5%; }
+.save-int  { left: 91%; top: 21.0%; width: 6%;  height: 2%; font-size: 16px; }
+
+.field-wis { left: 87%; top: 27.0%; width: 10%; height: 3%; font-size: 22px; }
+.mod-wis   { left: 87%; top: 30.0%; width: 10%; height: 2%; font-size: 16px; }
+.save-wis-check { left: 88.2%; top: 33.4%; width: 1.5%; height: 1.5%; }
+.save-wis  { left: 91%; top: 33.0%; width: 6%;  height: 2%; font-size: 16px; }
+
+.field-cha { left: 87%; top: 39.0%; width: 10%; height: 3%; font-size: 22px; }
+.mod-cha   { left: 87%; top: 42.0%; width: 10%; height: 2%; font-size: 16px; }
+.save-cha-check { left: 88.2%; top: 45.4%; width: 1.5%; height: 1.5%; }
+.save-cha  { left: 91%; top: 45.0%; width: 6%;  height: 2%; font-size: 16px; }
+
+/* Zentrales Portrait */
+.portrait-drop {
+  position: absolute;
+  left: 24%; top: 12%;
+  width: 52%; height: 26%;
+  background: rgba(255,255,255,0.0);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.portrait-drop img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+}
+.portrait-drop.has-image img { display: block; }
+.portrait-drop.has-image .portrait-hint { display: none; }
+.portrait-hint {
+  color: #999;
+  font-style: italic;
+  font-size: 16px;
+}
+.portrait-drop.drag-over {
+  background: rgba(200,220,255,0.3);
+  outline: 2px dashed #6a8bd6;
+}
+
+/* Bewegung / Initiative — links von Portrait */
+.field-speed      { left: 17.5%; top: 15%;   width: 6.5%; height: 3%; font-size: 16px; }
+.field-initiative { left: 17.5%; top: 22%;   width: 6.5%; height: 3%; font-size: 16px; }
+
+/* Größe / Passive Wahrnehmung — rechts von Portrait */
+.field-size       { left: 76%;   top: 15%;   width: 6.5%; height: 3%; font-size: 16px; }
+.field-passive    { left: 76%;   top: 22%;   width: 6.5%; height: 3%; font-size: 16px; }
+
+/* HP / AC / Temp HP (Herz / Schild / Herz) */
+.field-hp-current { left: 25%; top: 33.5%; width: 6%; height: 2.5%; font-size: 20px; }
+.field-hp-max     { left: 25%; top: 36.5%; width: 6%; height: 2.5%; font-size: 20px; }
+.field-ac         { left: 47%; top: 34.5%; width: 6%; height: 2.5%; font-size: 22px; }
+.field-temp-hp    { left: 69%; top: 34.5%; width: 6%; height: 3%;   font-size: 20px; }
+
+/* Übungsbonus / Trefferwürfel / Inspiration */
+.field-prof-bonus         { left: 27%; top: 43%;   width: 6%; height: 3%; font-size: 20px; }
+.field-hit-dice-current   { left: 46%; top: 43.5%; width: 5%; height: 2.2%; font-size: 16px; }
+.field-hit-dice-max       { left: 46%; top: 45.7%; width: 5%; height: 2.2%; font-size: 16px; }
+.field-inspiration        { position: absolute; left: 67.5%; top: 44.5%; width: 3%; height: 2.5%; }
+
+/* Alleskönner (Jack of All Trades) */
+.jack-of-all {
+  position: absolute;
+  left: 3.3%; top: 50.5%;
+  width: 1.6%; height: 1.6%;
+}
+
+/* Fertigkeiten-Liste */
+.skills {
+  position: absolute;
+  left: 3%; top: 52.8%;
+  width: 32%; height: 44%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15%;
+}
+.skill-row {
+  display: grid;
+  grid-template-columns: 22px 1fr 40px;
+  align-items: center;
+  height: 2.35%;
+  min-height: 24px;
+  gap: 4px;
+  padding: 0 4px;
+}
+.skill-row input[type="checkbox"] {
+  position: static;
+  width: 16px; height: 16px;
+  margin: 0;
+}
+.skill-row .skill-name { font-style: italic; font-size: 15px; padding-left: 4px; }
+.skill-row .skill-value {
+  text-align: right;
+  font-size: 15px;
+  padding-right: 4px;
+}
+
+/* Waffen-Tabelle */
+.weapons {
+  position: absolute;
+  left: 38%; top: 54.5%;
+  width: 59%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.weapon-row {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr 1fr 2fr;
+  gap: 4px;
+}
+.weapon-row input {
+  position: static;
+  height: 26px;
+  border-bottom: 1px dotted #999;
+  font-size: 14px;
+  text-align: left;
+  padding: 2px 4px;
+}
+
+/* Klassenmerkmal und Fähigkeiten */
+.features {
+  position: absolute;
+  left: 38%; top: 68%;
+  width: 59%; height: 28%;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-size: 14px;
+  text-align: left;
+  padding: 8px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+/* ====== Print ====== */
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .sheet {
+    margin: 0;
+    width: 100%;
+    box-shadow: none;
+    page-break-after: always;
+  }
+  .input-layer input:focus,
+  .input-layer textarea:focus { background: transparent; }
+}
