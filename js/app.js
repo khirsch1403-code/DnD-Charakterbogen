@@ -40,7 +40,8 @@ function buildSkillsUI() {
     const row = document.createElement('div');
     row.className = 'skill-row';
     row.innerHTML = `
-      <label><input type="checkbox" id="skill-${s.id}-prof" data-save /></label>
+      <input type="checkbox" id="skill-${s.id}-prof" data-save title="Übung" />
+      <input type="checkbox" id="skill-${s.id}-exp"  data-save title="Expertise" />
       <span class="skill-name">${s.name}</span>
       <span class="skill-value" id="skill-${s.id}-value">+0</span>
     `;
@@ -76,11 +77,13 @@ function recalcAll() {
   let passive = 10 + mods.wis + (perceptionProf ? pb : (jack ? jackBonus : 0));
   $('passive-perception').textContent = passive;
 
-  // Skills
+  // Skills (Übung + Expertise; Expertise setzt Übung voraus im 5e-2024-Regelwerk)
   SKILLS.forEach((s) => {
     const prof = $(`skill-${s.id}-prof`).checked;
+    const exp  = $(`skill-${s.id}-exp`).checked;
     let val = mods[s.attr];
-    if (prof) val += pb;
+    if (exp) val += pb * 2;
+    else if (prof) val += pb;
     else if (jack) val += jackBonus;
     $(`skill-${s.id}-value`).textContent = fmt(val);
   });

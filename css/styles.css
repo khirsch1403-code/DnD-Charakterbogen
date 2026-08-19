@@ -87,13 +87,22 @@ html, body {
   background: var(--field-focus);
   border-radius: 3px;
 }
+/* Alle Checkboxen: kein Standard-Kästchen, nur schwarzer Kreis wenn angehakt */
 .input-layer input[type="checkbox"] {
   position: absolute;
   width: 100%;
   height: 100%;
   margin: 0;
+  padding: 0;
   cursor: pointer;
-  accent-color: #444;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+.input-layer input[type="checkbox"]:checked {
+  background: radial-gradient(circle at center, #000 45%, transparent 47%);
 }
 
 /* ============================================================
@@ -217,16 +226,23 @@ html, body {
 }
 .skill-row {
   display: grid;
-  grid-template-columns: 24px 1fr 40px;
+  grid-template-columns: 16px 16px 1fr 40px;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   padding: 0 4px;
 }
 .skill-row input[type="checkbox"] {
   position: static;
-  width: 15px; height: 15px;
+  width: 14px; height: 14px;
   margin: 0;
-  accent-color: #444;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.skill-row input[type="checkbox"]:checked {
+  background: radial-gradient(circle at center, #000 45%, transparent 47%);
 }
 .skill-row .skill-name { font-style: italic; font-size: 15px; padding-left: 4px; }
 .skill-row .skill-value { text-align: right; font-size: 15px; padding-right: 4px; }
@@ -242,7 +258,7 @@ html, body {
 }
 .weapon-row {
   display: grid;
-  grid-template-columns: 2.2fr 1.4fr 1fr 1fr 2fr;
+  grid-template-columns: 2.6fr 1.4fr 0.7fr 0.6fr 2.5fr;
   gap: 4px;
   height: 2.05%;
   min-height: 22px;
