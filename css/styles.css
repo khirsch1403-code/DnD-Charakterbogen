@@ -87,11 +87,16 @@ html, body {
   background: var(--field-focus);
   border-radius: 3px;
 }
-/* Alle Checkboxen: kein Standard-Kästchen, nur schwarzer Kreis wenn angehakt */
+/* Alle Checkboxen: kein Standard-Kästchen, nur ein kleiner schwarzer Kreis
+   wenn angehakt. Klickfläche entspricht dem Elternelement (Label),
+   die sichtbare Markierung hat aber feste 10x10px zentriert. */
 .input-layer input[type="checkbox"] {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
   margin: 0;
   padding: 0;
   cursor: pointer;
@@ -100,9 +105,14 @@ html, body {
   background: transparent;
   border: none;
   outline: none;
+  border-radius: 50%;
 }
 .input-layer input[type="checkbox"]:checked {
-  background: radial-gradient(circle at center, #000 45%, transparent 47%);
+  background: #000;
+}
+/* Große Klickfläche über das ganze Label */
+.input-layer label:has(> input[type="checkbox"]) {
+  cursor: pointer;
 }
 
 /* ============================================================
@@ -233,16 +243,19 @@ html, body {
 }
 .skill-row input[type="checkbox"] {
   position: static;
-  width: 14px; height: 14px;
-  margin: 0;
+  transform: none;
+  top: auto; left: auto;
+  width: 10px; height: 10px;
+  margin: 0 auto;
   appearance: none;
   -webkit-appearance: none;
   background: transparent;
   border: none;
+  border-radius: 50%;
   cursor: pointer;
 }
 .skill-row input[type="checkbox"]:checked {
-  background: radial-gradient(circle at center, #000 45%, transparent 47%);
+  background: #000;
 }
 .skill-row .skill-name { font-style: italic; font-size: 15px; padding-left: 4px; }
 .skill-row .skill-value { text-align: right; font-size: 15px; padding-right: 4px; }
