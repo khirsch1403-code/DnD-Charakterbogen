@@ -299,6 +299,9 @@ function setupCalibrationDrag() {
           const snap = applySnap(newLeft, newTop, startWPct, startHPct, snapTargets);
           newLeft = snap.left;
           newTop  = snap.top;
+          // Innerhalb des Bogens halten – so kann nichts "verschwinden"
+          newLeft = Math.max(0, Math.min(100 - startWPct, newLeft));
+          newTop  = Math.max(0, Math.min(100 - startHPct, newTop));
           el.style.left = newLeft.toFixed(2) + '%';
           el.style.top  = newTop.toFixed(2)  + '%';
           showSnapGuides(guides, snap);
@@ -606,11 +609,18 @@ function buildPalette() {
       // Alle Palette-Elemente sind standardmäßig versteckt, bis der User sie aktiviert
       el.classList.add('palette-field');
 
-      const row = document.createElement('label');
-      row.innerHTML = `<input type="checkbox" data-pal-target="${item.id}" /> ${item.label}`;
+      const row = document.createElement('div');
+      row.className = 'palette-row';
+      row.innerHTML = `
+        <label><input type="checkbox" data-pal-target="${item.id}" /> ${item.label}</label>
+        <button type="button" class="pal-recall" title="An Startposition holen (2%/2%)">↺</button>
+      `;
       list.appendChild(row);
       row.querySelector('input').addEventListener('change', (e) => {
         togglePaletteItem(item, e.target.checked);
+      });
+      row.querySelector('.pal-recall').addEventListener('click', () => {
+        recallPaletteItem(item);
       });
     });
   });
@@ -652,8 +662,39 @@ function togglePaletteItem(item, on) {
   const el = resolveItemElement(item);
   if (!el) return;
   el.classList.toggle('pal-active', on);
+  if (on) ensureVisible(el);
   savePaletteState();
   saveLayoutToLocalStorage();
+}
+
+// Recall: Feld an sichtbare Startposition (2%/2%) holen und aktivieren
+function recallPaletteItem(item) {
+  const el = resolveItemElement(item);
+  if (!el) return;
+  el.style.left = '2%';
+  el.style.top  = '2%';
+  el.classList.add('pal-active');
+  const cb = document.querySelector(`[data-pal-target="${item.id}"]`);
+  if (cb) cb.checked = true;
+  savePaletteState();
+  saveLayoutToLocalStorage();
+}
+
+// Falls Feld außerhalb des Bogens sitzt, an sichtbaren Rand holen
+function ensureVisible(el) {
+  const sheet = document.getElementById('sheet');
+  const sheetRect = sheet.getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  const outside =
+    r.right  < sheetRect.left  + 2 ||
+    r.left   > sheetRect.right - 2 ||
+    r.bottom < sheetRect.top   + 2 ||
+    r.top    > sheetRect.bottom- 2 ||
+    r.width  < 1 || r.height < 1;
+  if (outside) {
+    el.style.left = '2%';
+    el.style.top  = '2%';
+  }
 }
 
 function collectPaletteState() {
@@ -678,7 +719,11 @@ function restorePaletteState() {
     PALETTE_ITEMS.forEach(item => {
       const on = !!state[item.id];
       const el = resolveItemElement(item);
-      if (el && on) el.classList.add('pal-active');
+      if (el && on) {
+        el.classList.add('pal-active');
+        // Nach dem Anzeigen prüfen ob innerhalb des Bogens — sonst zurückholen
+        requestAnimationFrame(() => ensureVisible(el));
+      }
       const cb = document.querySelector(`[data-pal-target="${item.id}"]`);
       if (cb) cb.checked = on;
     });
