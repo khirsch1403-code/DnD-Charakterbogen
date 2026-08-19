@@ -89,26 +89,31 @@ html, body {
 }
 /* Alle Checkboxen: kein Standard-Kästchen, nur ein kleiner schwarzer Kreis
    wenn angehakt. Klickfläche entspricht dem Elternelement (Label),
-   die sichtbare Markierung hat aber feste 10x10px zentriert. */
+   die sichtbare Markierung hat aber feste 10x10px zentriert.
+   !important stellt sicher, dass keine ältere Regel eine überdimensionierte
+   Größe erzwingt (z.B. width:100% aus einem vorherigen Cache-Stand). */
 .input-layer input[type="checkbox"] {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  padding: 0;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 10px !important;
+  height: 10px !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  padding: 0 !important;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
-  background: transparent;
-  border: none;
-  outline: none;
-  border-radius: 50%;
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
 }
 .input-layer input[type="checkbox"]:checked {
-  background: #000;
+  background: #000 !important;
+  background-image: none !important;
 }
 /* Große Klickfläche über das ganze Label */
 .input-layer label:has(> input[type="checkbox"]) {
