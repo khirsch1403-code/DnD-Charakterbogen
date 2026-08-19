@@ -102,12 +102,12 @@ html, body {
 
 /* --- KOPF: Charakterlevel + Name --- */
 .field-level {
-  left: 46%; top: 1.2%;
+  left: 46.63%; top: 3.43%;
   width: 8%; height: 2.3%;
   font-size: 20px; font-style: italic;
 }
 .field-name {
-  left: 28%; top: 5.5%;
+  left: 27.75%; top: 6.39%;
   width: 44%; height: 3.2%;
   font-size: 26px; font-style: italic;
 }
@@ -115,63 +115,56 @@ html, body {
 /* --- DEATH SAVES (6 Kreise, links Fehlschlag / rechts Erfolg) --- */
 .death-saves {
   position: absolute;
-  top: 11.6%;
-  height: 2.2%;
+  height: 2.65%;
   display: flex;
   gap: 1.3%;
 }
-.death-saves.failures  { left: 40.8%; }
-.death-saves.successes { left: 51.6%; }
+.death-saves.failures  { left: 38.03%; top: 10.98%; width: 9.95%; }
+.death-saves.successes { left: 53.49%; top: 11.15%; width: 9.95%; }
 .death-saves label {
   position: relative;
   width: 1.8%; height: 100%;
   min-width: 18px; min-height: 18px;
+  flex: 1;
 }
-.sheet { --_ds-w: calc(var(--sheet-w) * 0.018); }
-.death-saves label { width: 22px; }
 
 /* --- LINKES BANNER: STR / DEX / CON --- */
-/* Banner-Inhalt läuft ungefähr von y=13% bis y=57% */
+.field-str      { left: 7.90%;  top: 19.56%; width: 8%;   height: 2.8%; font-size: 22px; }
+.mod-str        { left: 6.64%;  top: 22.27%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
+.save-str-check { left: 8.05%;  top: 25.76%; width: 1.4%; height: 1.4%; }
+.save-str       { left: 10.15%; top: 25.46%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-/* STR (Sektion 1) */
-.field-str      { left: 5%;   top: 19.2%; width: 8%;  height: 2.8%; font-size: 22px; }
-.mod-str        { left: 5%;   top: 22.0%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
-.save-str-check { left: 5.4%; top: 24.6%; width: 1.4%; height: 1.4%; }
-.save-str       { left: 7.5%; top: 24.3%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
+.field-dex      { left: 7.90%;  top: 32.68%; width: 8%;   height: 2.8%; font-size: 22px; }
+.mod-dex        { left: 6.89%;  top: 35.57%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
+.save-dex-check { left: 8.42%;  top: 38.52%; width: 1.4%; height: 1.4%; }
+.save-dex       { left: 10.52%; top: 38.22%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-/* DEX (Sektion 2) */
-.field-dex      { left: 5%;   top: 32.5%; width: 8%;  height: 2.8%; font-size: 22px; }
-.mod-dex        { left: 5%;   top: 35.3%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
-.save-dex-check { left: 5.4%; top: 37.9%; width: 1.4%; height: 1.4%; }
-.save-dex       { left: 7.5%; top: 37.6%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
+.field-con      { left: 8.28%;  top: 45.55%; width: 8%;   height: 2.8%; font-size: 22px; }
+.mod-con        { left: 7.39%;  top: 48.26%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
+.save-con-check { left: 8.42%;  top: 51.31%; width: 1.4%; height: 1.4%; }
+.save-con       { left: 10.52%; top: 51.01%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-/* CON (Sektion 3) */
-.field-con      { left: 5%;   top: 46.0%; width: 8%;  height: 2.8%; font-size: 22px; }
-.mod-con        { left: 5%;   top: 48.8%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
-.save-con-check { left: 5.4%; top: 51.4%; width: 1.4%; height: 1.4%; }
-.save-con       { left: 7.5%; top: 51.1%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
+/* --- RECHTES BANNER: INT / WIS / CHA --- */
+.field-int      { left: 85.24%; top: 19.02%; width: 8%;   height: 2.8%; font-size: 22px; }
+.mod-int        { left: 84.48%; top: 21.82%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
+.save-int-check { left: 85.51%; top: 25.04%; width: 1.4%; height: 1.4%; }
+.save-int       { left: 87.61%; top: 24.74%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-/* --- RECHTES BANNER: INT / WIS / CHA (gespiegelt) --- */
-.field-int      { left: 87%;   top: 19.2%; width: 8%;  height: 2.8%; font-size: 22px; }
-.mod-int        { left: 87%;   top: 22.0%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
-.save-int-check { left: 87.4%; top: 24.6%; width: 1.4%; height: 1.4%; }
-.save-int       { left: 89.5%; top: 24.3%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
+.field-wis      { left: 85.11%; top: 31.79%; width: 8%;   height: 2.8%; font-size: 22px; }
+.mod-wis        { left: 85.36%; top: 34.68%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
+.save-wis-check { left: 85.51%; top: 37.90%; width: 1.4%; height: 1.4%; }
+.save-wis       { left: 87.61%; top: 37.60%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-.field-wis      { left: 87%;   top: 32.5%; width: 8%;  height: 2.8%; font-size: 22px; }
-.mod-wis        { left: 87%;   top: 35.3%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
-.save-wis-check { left: 87.4%; top: 37.9%; width: 1.4%; height: 1.4%; }
-.save-wis       { left: 89.5%; top: 37.6%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
-
-.field-cha      { left: 87%;   top: 46.0%; width: 8%;  height: 2.8%; font-size: 22px; }
-.mod-cha        { left: 87%;   top: 48.8%; width: 8%;  height: 2.0%; font-size: 15px; color:#555; }
-.save-cha-check { left: 87.4%; top: 51.4%; width: 1.4%; height: 1.4%; }
-.save-cha       { left: 89.5%; top: 51.1%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
+.field-cha      { left: 85.11%; top: 44.40%; width: 8%;    height: 2.8%; font-size: 22px; }
+.mod-cha        { left: 84.86%; top: 47.46%; width: 7.75%; height: 2.18%; font-size: 15px; color:#555; }
+.save-cha-check { left: 85.64%; top: 50.69%; width: 2.27%; height: 1.4%; }
+.save-cha       { left: 87.74%; top: 50.39%; width: 5.5%;  height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
 /* --- ZENTRALES PORTRAIT --- */
 .portrait-drop {
   position: absolute;
-  left: 23.5%; top: 14%;
-  width: 53%;  height: 26%;
+  left: 28.54%; top: 14.36%;
+  width: 43.17%; height: 30.81%;
   background: transparent;
   border-radius: 12px;
   overflow: hidden;
@@ -187,38 +180,38 @@ html, body {
   outline: 2px dashed #6a8bd6;
 }
 
-/* --- Bewegung / Initiative (kleine Boxen links des Portraits) --- */
-.field-speed      { left: 17.5%; top: 21.5%; width: 6%; height: 2.6%; font-size: 16px; }
-.field-initiative { left: 17.5%; top: 30.8%; width: 6%; height: 2.6%; font-size: 16px; }
+/* --- Bewegung / Initiative --- */
+.field-speed      { left: 21.66%; top: 25.86%; width: 6%; height: 2.6%; font-size: 16px; }
+.field-initiative { left: 21.66%; top: 35.88%; width: 6%; height: 2.6%; font-size: 16px; }
 
-/* --- Größe / Passive Wahrnehmung (kleine Boxen rechts) --- */
-.field-size    { left: 76.5%; top: 21.5%; width: 6%; height: 2.6%; font-size: 16px; }
-.field-passive { left: 76.5%; top: 30.8%; width: 6%; height: 2.6%; font-size: 16px; }
+/* --- Größe / Passive Wahrnehmung --- */
+.field-size    { left: 71.84%; top: 25.78%; width: 6%; height: 2.6%; font-size: 16px; }
+.field-passive { left: 71.84%; top: 35.79%; width: 6%; height: 2.6%; font-size: 16px; }
 
-/* --- HP / AC / TEMP HP (Herz / Schild / Herz) --- */
-.field-hp-current { left: 28%;   top: 43.0%; width: 6%;  height: 2.4%; font-size: 20px; }
-.field-hp-max     { left: 28%;   top: 45.6%; width: 6%;  height: 2.4%; font-size: 20px; }
-.field-ac         { left: 47%;   top: 45.5%; width: 6%;  height: 2.6%; font-size: 22px; }
-.field-temp-hp    { left: 66%;   top: 44.3%; width: 6%;  height: 2.8%; font-size: 20px; }
+/* --- HP / AC / TEMP HP --- */
+.field-hp-current { left: 26.61%; top: 46.03%; width: 5%; height: 2.4%; font-size: 20px; }
+.field-hp-max     { left: 31.28%; top: 46.04%; width: 5%; height: 2.4%; font-size: 20px; }
+.field-ac         { left: 47.63%; top: 45.86%; width: 6%; height: 2.6%; font-size: 22px; }
+.field-temp-hp    { left: 66.00%; top: 46.08%; width: 6%; height: 2.8%; font-size: 20px; }
 
 /* --- Übungsbonus / Trefferwürfel / Inspiration --- */
-.field-prof-bonus       { left: 33%;   top: 53.7%; width: 6%; height: 3.5%; font-size: 22px; }
-.field-hit-dice-current { left: 46.5%; top: 53.2%; width: 5%; height: 2.2%; font-size: 16px; }
-.field-hit-dice-max     { left: 46.5%; top: 55.5%; width: 5%; height: 2.2%; font-size: 16px; }
-.field-inspiration      { position: absolute; left: 59.5%; top: 54.6%; width: 3%; height: 3%; }
+.field-prof-bonus       { left: 28.34%; top: 54.86%; width: 6%; height: 3.5%; font-size: 22px; }
+.field-hit-dice-current { left: 44.48%; top: 55.87%; width: 5%; height: 2.2%; font-size: 16px; }
+.field-hit-dice-max     { left: 50.91%; top: 56.03%; width: 5%; height: 2.2%; font-size: 16px; }
+.field-inspiration      { position: absolute; left: 67.06%; top: 54.60%; width: 3%; height: 3%; }
 
 /* --- Alleskönner (Jack of All Trades) --- */
 .jack-of-all {
   position: absolute;
-  left: 3.5%; top: 61.9%;
-  width: 1.6%; height: 1.6%;
+  left: 4.00%; top: 60.83%;
+  width: 4.5%; height: 1.78%;
 }
 
 /* --- Fertigkeiten-Liste (18 Reihen) --- */
 .skills {
   position: absolute;
-  left: 3%;  top: 63.9%;
-  width: 32%; height: 33%;
+  left: 3.25%;  top: 62.92%;
+  width: 32.5%; height: 34.96%;
   display: grid;
   grid-template-rows: repeat(18, 1fr);
 }
@@ -241,8 +234,8 @@ html, body {
 /* --- Waffen-Tabelle (5 Zeilen) --- */
 .weapons {
   position: absolute;
-  left: 38%; top: 65.5%;
-  width: 59%;
+  left: 40.52%; top: 64.96%;
+  width: 54.84%; height: 9.18%;
   display: flex;
   flex-direction: column;
   gap: 0.4%;
@@ -268,8 +261,8 @@ html, body {
 /* --- Klassenmerkmal und Fähigkeiten --- */
 .features {
   position: absolute;
-  left: 38%; top: 79%;
-  width: 59%; height: 18%;
+  left: 39.13%; top: 76.15%;
+  width: 56%; height: 21%;
   border: none;
   background: transparent;
   resize: none;
