@@ -284,12 +284,18 @@ function setupCalibrationDrag() {
 
       el.classList.add('dragging');
 
+      const isCircle = el.classList.contains('circle');
       const move = (ev) => {
         const dxPct = (ev.clientX - startX) / sheetRect.width * 100;
         const dyPct = (ev.clientY - startY) / sheetRect.height * 100;
         if (mode === 'move') {
           el.style.left = (startLeftPct + dxPct).toFixed(2) + '%';
           el.style.top  = (startTopPct  + dyPct).toFixed(2) + '%';
+        } else if (isCircle) {
+          // Kreise bleiben 1:1 – nur Breite setzen, aspect-ratio in CSS macht Höhe
+          const newW = Math.max(0.3, startWPct + dxPct);
+          el.style.width  = newW.toFixed(2) + '%';
+          el.style.height = '';
         } else {
           el.style.width  = Math.max(0.5, startWPct + dxPct).toFixed(2) + '%';
           el.style.height = Math.max(0.5, startHPct + dyPct).toFixed(2) + '%';
@@ -372,8 +378,160 @@ document.addEventListener('DOMContentLoaded', () => {
     saveToLocalStorage();
   });
 
+  buildPalette();
   setupCalibrationDrag();
   loadLayoutFromLocalStorage();
   loadFromLocalStorage();
+  restorePaletteState();
   recalcAll();
 });
+
+// ============================================================
+// Feld-Palette (rechte Sidebar, K-Modus)
+// ============================================================
+
+// Standard 5e-2024 Felder für die erste Seite eines Charakterbogens.
+// type: text | number | textarea | circle
+// group: Kategorie in der Palette
+const PALETTE_ITEMS = [
+  // Kopfdaten
+  { id: 'pal-class',       label: 'Klasse',               type: 'text',   group: 'Kopfdaten', w: 18, h: 2.5 },
+  { id: 'pal-subclass',    label: 'Unterklasse',          type: 'text',   group: 'Kopfdaten', w: 18, h: 2.5 },
+  { id: 'pal-species',     label: 'Spezies',              type: 'text',   group: 'Kopfdaten', w: 15, h: 2.5 },
+  { id: 'pal-background',  label: 'Hintergrund',          type: 'text',   group: 'Kopfdaten', w: 15, h: 2.5 },
+  { id: 'pal-alignment',   label: 'Ausrichtung',          type: 'text',   group: 'Kopfdaten', w: 15, h: 2.5 },
+  { id: 'pal-player-name', label: 'Spielername',          type: 'text',   group: 'Kopfdaten', w: 15, h: 2.5 },
+  { id: 'pal-xp',          label: 'Erfahrungspunkte',     type: 'number', group: 'Kopfdaten', w: 8,  h: 2.5 },
+
+  // Zauber
+  { id: 'pal-spell-attr',  label: 'Zauber-Attribut',      type: 'text',   group: 'Zauberwerte', w: 8, h: 2.5 },
+  { id: 'pal-spell-dc',    label: 'Zauber-SG',            type: 'number', group: 'Zauberwerte', w: 6, h: 2.5 },
+  { id: 'pal-spell-atk',   label: 'Zauber-Angriffsbonus', type: 'number', group: 'Zauberwerte', w: 6, h: 2.5 },
+
+  // Kompetenzen & Sprachen
+  { id: 'pal-origin-feat', label: 'Herkunftstalent',      type: 'text',     group: 'Kompetenzen', w: 25, h: 2.5 },
+  { id: 'pal-languages',   label: 'Sprachen',             type: 'textarea', group: 'Kompetenzen', w: 25, h: 6 },
+  { id: 'pal-weapon-prof', label: 'Waffenkompetenzen',    type: 'textarea', group: 'Kompetenzen', w: 25, h: 6 },
+  { id: 'pal-armor-prof',  label: 'Rüstungskompetenzen',  type: 'textarea', group: 'Kompetenzen', w: 25, h: 5 },
+  { id: 'pal-tool-prof',   label: 'Werkzeugkompetenzen',  type: 'textarea', group: 'Kompetenzen', w: 25, h: 5 },
+
+  // Münzen
+  { id: 'pal-cp', label: 'Kupfer (K)',   type: 'number', group: 'Münzen', w: 6, h: 2.5 },
+  { id: 'pal-sp', label: 'Silber (S)',   type: 'number', group: 'Münzen', w: 6, h: 2.5 },
+  { id: 'pal-ep', label: 'Elektrum (E)', type: 'number', group: 'Münzen', w: 6, h: 2.5 },
+  { id: 'pal-gp', label: 'Gold (G)',     type: 'number', group: 'Münzen', w: 6, h: 2.5 },
+  { id: 'pal-pp', label: 'Platin (P)',   type: 'number', group: 'Münzen', w: 6, h: 2.5 },
+
+  // Generisch
+  { id: 'pal-circle-1',    label: 'Generischer Kreis 1', type: 'circle',   group: 'Generisch', w: 2 },
+  { id: 'pal-circle-2',    label: 'Generischer Kreis 2', type: 'circle',   group: 'Generisch', w: 2 },
+  { id: 'pal-circle-3',    label: 'Generischer Kreis 3', type: 'circle',   group: 'Generisch', w: 2 },
+  { id: 'pal-text-1',      label: 'Freies Textfeld 1',   type: 'text',     group: 'Generisch', w: 15, h: 2.5 },
+  { id: 'pal-text-2',      label: 'Freies Textfeld 2',   type: 'text',     group: 'Generisch', w: 15, h: 2.5 },
+  { id: 'pal-textarea-1',  label: 'Freies Textblock 1',  type: 'textarea', group: 'Generisch', w: 25, h: 6 },
+];
+
+const PALETTE_STATE_KEY = 'dnd-charakterbogen-palette-v1';
+
+function buildPalette() {
+  const inputLayer = document.querySelector('.input-layer');
+  const list = document.getElementById('palette-list');
+
+  // Nach Gruppe sortieren
+  const groups = {};
+  PALETTE_ITEMS.forEach(item => {
+    (groups[item.group] = groups[item.group] || []).push(item);
+  });
+
+  Object.entries(groups).forEach(([groupName, items]) => {
+    const title = document.createElement('div');
+    title.className = 'pal-group-title';
+    title.textContent = groupName;
+    list.appendChild(title);
+
+    items.forEach(item => {
+      // Zugehöriges Feld auf dem Bogen anlegen (versteckt)
+      const field = createPaletteField(item);
+      inputLayer.appendChild(field);
+      DRAGGABLES.push({ sel: '#' + item.id, big: item.type === 'textarea' });
+
+      // Palette-Zeile mit Checkbox
+      const row = document.createElement('label');
+      row.innerHTML = `<input type="checkbox" data-pal-target="${item.id}" /> ${item.label}`;
+      list.appendChild(row);
+      row.querySelector('input').addEventListener('change', (e) => {
+        togglePaletteItem(item.id, e.target.checked);
+      });
+    });
+  });
+}
+
+function createPaletteField(item) {
+  let el;
+  switch (item.type) {
+    case 'textarea':
+      el = document.createElement('textarea');
+      el.placeholder = item.label;
+      break;
+    case 'circle':
+      el = document.createElement('label');
+      el.className = 'circle';
+      el.innerHTML = `<input type="checkbox" data-save id="${item.id}-cb" />`;
+      break;
+    case 'number':
+      el = document.createElement('input');
+      el.type = 'number';
+      el.placeholder = item.label;
+      break;
+    default:
+      el = document.createElement('input');
+      el.type = 'text';
+      el.placeholder = item.label;
+  }
+  el.id = item.id;
+  el.classList.add('palette-field');
+  if (item.type === 'circle') el.classList.add('circle');
+  el.setAttribute('data-save', '');
+  // Default-Position links oben auf dem Bogen (außerhalb sichtbarer Design-Elemente)
+  el.style.left = '2%';
+  el.style.top = '2%';
+  el.style.width = item.w + '%';
+  if (item.type !== 'circle' && item.h) el.style.height = item.h + '%';
+  return el;
+}
+
+function togglePaletteItem(id, on) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('pal-active', on);
+  savePaletteState();
+  saveLayoutToLocalStorage();
+}
+
+function collectPaletteState() {
+  const state = {};
+  PALETTE_ITEMS.forEach(item => {
+    const el = document.getElementById(item.id);
+    state[item.id] = el ? el.classList.contains('pal-active') : false;
+  });
+  return state;
+}
+
+function savePaletteState() {
+  try { localStorage.setItem(PALETTE_STATE_KEY, JSON.stringify(collectPaletteState())); }
+  catch (e) { console.warn(e); }
+}
+
+function restorePaletteState() {
+  try {
+    const raw = localStorage.getItem(PALETTE_STATE_KEY);
+    if (!raw) return;
+    const state = JSON.parse(raw);
+    Object.entries(state).forEach(([id, on]) => {
+      const el = document.getElementById(id);
+      if (el && on) el.classList.add('pal-active');
+      const cb = document.querySelector(`[data-pal-target="${id}"]`);
+      if (cb) cb.checked = !!on;
+    });
+  } catch (e) { console.warn(e); }
+}

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>D&D Charakterbogen</title>
-  <link rel="stylesheet" href="css/styles.css?v=7" />
+  <link rel="stylesheet" href="css/styles.css?v=8" />
 </head>
 <body>
   <div class="toolbar no-print">
@@ -36,46 +36,46 @@
 
       <!-- Death Saves: 3 Fehlschläge (links vom Totenkopf), 3 Erfolge (rechts) -->
       <div class="death-saves failures">
-        <label><input type="checkbox" data-save id="ds-f1" /></label>
-        <label><input type="checkbox" data-save id="ds-f2" /></label>
-        <label><input type="checkbox" data-save id="ds-f3" /></label>
+        <label class="circle"><input type="checkbox" data-save id="ds-f1" /></label>
+        <label class="circle"><input type="checkbox" data-save id="ds-f2" /></label>
+        <label class="circle"><input type="checkbox" data-save id="ds-f3" /></label>
       </div>
       <div class="death-saves successes">
-        <label><input type="checkbox" data-save id="ds-s1" /></label>
-        <label><input type="checkbox" data-save id="ds-s2" /></label>
-        <label><input type="checkbox" data-save id="ds-s3" /></label>
+        <label class="circle"><input type="checkbox" data-save id="ds-s1" /></label>
+        <label class="circle"><input type="checkbox" data-save id="ds-s2" /></label>
+        <label class="circle"><input type="checkbox" data-save id="ds-s3" /></label>
       </div>
 
       <!-- Attribute (linkes Banner: STR / DEX / CON) -->
       <input type="number" class="field field-str" id="str-score" placeholder="10" data-save />
       <div class="field mod-str" id="str-mod">+0</div>
-      <label class="save-check save-str-check"><input type="checkbox" id="str-save-prof" data-save /></label>
+      <label class="save-check save-str-check circle"><input type="checkbox" id="str-save-prof" data-save /></label>
       <div class="field save-str" id="str-save">+0</div>
 
       <input type="number" class="field field-dex" id="dex-score" placeholder="10" data-save />
       <div class="field mod-dex" id="dex-mod">+0</div>
-      <label class="save-check save-dex-check"><input type="checkbox" id="dex-save-prof" data-save /></label>
+      <label class="save-check save-dex-check circle"><input type="checkbox" id="dex-save-prof" data-save /></label>
       <div class="field save-dex" id="dex-save">+0</div>
 
       <input type="number" class="field field-con" id="con-score" placeholder="10" data-save />
       <div class="field mod-con" id="con-mod">+0</div>
-      <label class="save-check save-con-check"><input type="checkbox" id="con-save-prof" data-save /></label>
+      <label class="save-check save-con-check circle"><input type="checkbox" id="con-save-prof" data-save /></label>
       <div class="field save-con" id="con-save">+0</div>
 
       <!-- Attribute (rechtes Banner: INT / WIS / CHA) -->
       <input type="number" class="field field-int" id="int-score" placeholder="10" data-save />
       <div class="field mod-int" id="int-mod">+0</div>
-      <label class="save-check save-int-check"><input type="checkbox" id="int-save-prof" data-save /></label>
+      <label class="save-check save-int-check circle"><input type="checkbox" id="int-save-prof" data-save /></label>
       <div class="field save-int" id="int-save">+0</div>
 
       <input type="number" class="field field-wis" id="wis-score" placeholder="10" data-save />
       <div class="field mod-wis" id="wis-mod">+0</div>
-      <label class="save-check save-wis-check"><input type="checkbox" id="wis-save-prof" data-save /></label>
+      <label class="save-check save-wis-check circle"><input type="checkbox" id="wis-save-prof" data-save /></label>
       <div class="field save-wis" id="wis-save">+0</div>
 
       <input type="number" class="field field-cha" id="cha-score" placeholder="10" data-save />
       <div class="field mod-cha" id="cha-mod">+0</div>
-      <label class="save-check save-cha-check"><input type="checkbox" id="cha-save-prof" data-save /></label>
+      <label class="save-check save-cha-check circle"><input type="checkbox" id="cha-save-prof" data-save /></label>
       <div class="field save-cha" id="cha-save">+0</div>
 
       <!-- Zentrales Charakterbild -->
@@ -101,12 +101,12 @@
       <div class="field field-prof-bonus" id="prof-bonus">+2</div>
       <input type="text" class="field field-hit-dice-current" id="hit-dice-current" placeholder="1" data-save />
       <input type="text" class="field field-hit-dice-max" id="hit-dice-max" placeholder="1d8" data-save />
-      <label class="field-inspiration">
+      <label class="field-inspiration circle">
         <input type="checkbox" id="inspiration" data-save />
       </label>
 
       <!-- Alleskönner (Jack of All Trades) -->
-      <label class="jack-of-all"><input type="checkbox" id="jack-of-all" data-save /></label>
+      <label class="jack-of-all circle"><input type="checkbox" id="jack-of-all" data-save /></label>
 
       <!-- Fertigkeiten (Skills) -->
       <div class="skills" id="skills"></div>
@@ -114,9 +114,9 @@
       <!-- Kalibrier-Prototypen: nur im K-Modus sichtbar. Drei unabhängige
            Elemente – Übung-Kreis, Expertise-Kreis und Wert. Positioniere
            jedes einzeln (Kreise dürfen sich überlappen). -->
-      <div class="proto proto-prof"  id="proto-prof"  title="Übung"></div>
-      <div class="proto proto-exp"   id="proto-exp"   title="Expertise"></div>
-      <div class="proto proto-value" id="proto-value" title="Wert">+0</div>
+      <div class="proto proto-prof circle" id="proto-prof"  title="Übung"></div>
+      <div class="proto proto-exp  circle" id="proto-exp"   title="Expertise"></div>
+      <div class="proto proto-value"       id="proto-value" title="Wert">+0</div>
 
       <!-- Waffen und Schadenszaubertricks (5 Zeilen) -->
       <div class="weapons">
@@ -166,8 +166,15 @@
     <img class="frame-overlay" src="assets/frame.png" alt="" onerror="this.style.opacity=0.15;" />
   </div>
 
-  <div class="calibrate-hint">Kalibrier-Modus aktiv — Feld ziehen: verschieben · Rotes Eck ziehen: skalieren · dann "Layout exportieren"</div>
+  <div class="calibrate-hint">Kalibrier-Modus aktiv — Feld ziehen: verschieben · Rotes Eck ziehen: skalieren · Kreise bleiben 1:1</div>
 
-  <script src="js/app.js?v=7"></script>
+  <!-- Feld-Palette (nur im K-Modus sichtbar) -->
+  <aside class="palette no-print" id="palette">
+    <h3>Feld-Palette</h3>
+    <p class="palette-hint">Hake ein Feld an → es erscheint links oben auf dem Bogen. Zieh es an die gewünschte Stelle. Wieder abhaken = verstecken (Inhalt bleibt erhalten).</p>
+    <div id="palette-list"></div>
+  </aside>
+
+  <script src="js/app.js?v=8"></script>
 </body>
 </html>

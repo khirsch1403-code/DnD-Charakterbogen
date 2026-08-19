@@ -346,6 +346,74 @@ html, body {
 }
 
 /* ============================================================
+   KREISE (1:1 Seitenverhältnis) – erzwungen, egal wie skaliert
+   ============================================================ */
+.circle {
+  aspect-ratio: 1 / 1 !important;
+  height: auto !important;
+  border-radius: 50%;
+}
+
+/* ============================================================
+   FELD-PALETTE (nur im K-Modus sichtbar, rechts neben Bogen)
+   ============================================================ */
+.palette {
+  position: fixed;
+  top: 60px;
+  right: 12px;
+  width: 240px;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: #f8f7ee;
+  border: 1px solid #999;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 13px;
+  z-index: 90;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+  display: none;
+}
+body:has(.sheet.calibrate) .palette { display: block; }
+.palette h3 { margin: 0 0 6px; font-size: 14px; color: #333; }
+.palette-hint { font-size: 11px; color: #666; margin: 0 0 10px; line-height: 1.35; }
+.palette label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 2px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.palette label:hover { background: rgba(0,0,0,0.05); }
+.palette label input[type="checkbox"] {
+  width: 14px; height: 14px;
+  accent-color: #444;
+  cursor: pointer;
+}
+.palette .pal-group-title {
+  font-weight: bold; font-size: 12px; margin: 10px 0 4px;
+  color: #555; text-transform: uppercase; letter-spacing: 0.03em;
+}
+
+/* Palette-Felder (Wirkfelder auf dem Bogen): standardmäßig versteckt */
+.palette-field { display: none !important; }
+.palette-field.pal-active { display: block !important; }
+.palette-field.pal-active.circle { display: inline-block !important; }
+
+.palette-field {
+  position: absolute;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  color: var(--ink);
+  font-size: 14px;
+  padding: 2px;
+  outline: none;
+}
+.palette-field:focus {
+  background: var(--field-focus);
+  border-radius: 3px;
+}
+
+/* ============================================================
    KALIBRIER-MODUS – Drag & Resize
    ============================================================ */
 .sheet.calibrate .draggable {
