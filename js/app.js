@@ -42,7 +42,6 @@ function buildSkillsUI() {
     row.innerHTML = `
       <input type="checkbox" id="skill-${s.id}-prof" data-save title="Übung" />
       <input type="checkbox" id="skill-${s.id}-exp"  data-save title="Expertise" />
-      <span class="skill-name">${s.name}</span>
       <span class="skill-value" id="skill-${s.id}-value">+0</span>
     `;
     container.appendChild(row);
@@ -252,6 +251,7 @@ const DRAGGABLES = [
   { sel: '.field-hit-dice-max' }, { sel: '.field-inspiration' },
   { sel: '.jack-of-all' },
   { sel: '.skills', big: true }, { sel: '.weapons', big: true }, { sel: '.features', big: true },
+  { sel: '.skill-prototype', big: true },
 ];
 
 const LAYOUT_STORAGE_KEY = 'dnd-charakterbogen-layout-v1';

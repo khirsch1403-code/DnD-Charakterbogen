@@ -241,7 +241,7 @@ html, body {
 }
 .skill-row {
   display: grid;
-  grid-template-columns: 16px 16px 1fr 40px;
+  grid-template-columns: 16px 16px 1fr;
   align-items: center;
   gap: 3px;
   padding: 0 4px;
@@ -262,8 +262,38 @@ html, body {
 .skill-row input[type="checkbox"]:checked {
   background: #000;
 }
-.skill-row .skill-name { font-style: italic; font-size: 15px; padding-left: 4px; }
 .skill-row .skill-value { text-align: right; font-size: 15px; padding-right: 4px; }
+
+/* --- Skill-Prototyp (nur im Kalibrier-Modus sichtbar) ---
+   Eine einzelne, verschiebbare/skalierbare Skill-Reihe die zeigt,
+   wie eine Zeile aussehen soll: [prof-Kreis] [exp-Kreis] [Wert].
+   Nach dem Positionieren übernimmst du die Werte für alle 18 Reihen. */
+.skill-prototype {
+  position: absolute;
+  left: 3.25%; top: 61%;
+  width: 12%; height: 2.5%;
+  display: none;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  background: rgba(255, 240, 130, 0.5);
+  outline: 2px solid #b58a00;
+  z-index: 20;
+}
+.sheet.calibrate .skill-prototype { display: flex; }
+.skill-prototype .proto-circle {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #000;
+  flex: 0 0 auto;
+}
+.skill-prototype .proto-exp { opacity: 0.35; }
+.skill-prototype .proto-value {
+  flex: 1;
+  text-align: right;
+  font-size: 15px;
+  font-weight: bold;
+}
 
 /* --- Waffen-Tabelle (5 Zeilen) --- */
 .weapons {
