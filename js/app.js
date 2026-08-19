@@ -251,7 +251,7 @@ const DRAGGABLES = [
   { sel: '.field-hit-dice-max' }, { sel: '.field-inspiration' },
   { sel: '.jack-of-all' },
   { sel: '.skills', big: true }, { sel: '.weapons', big: true }, { sel: '.features', big: true },
-  { sel: '.skill-prototype', big: true },
+  { sel: '.proto-prof' }, { sel: '.proto-exp' }, { sel: '.proto-value' },
 ];
 
 const LAYOUT_STORAGE_KEY = 'dnd-charakterbogen-layout-v1';

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>D&D Charakterbogen</title>
-  <link rel="stylesheet" href="css/styles.css?v=6" />
+  <link rel="stylesheet" href="css/styles.css?v=7" />
 </head>
 <body>
   <div class="toolbar no-print">
@@ -111,13 +111,12 @@
       <!-- Fertigkeiten (Skills) -->
       <div class="skills" id="skills"></div>
 
-      <!-- Kalibrier-Prototyp: nur im K-Modus sichtbar. Skaliere Größe und
-           Position einer einzelnen Skill-Reihe (2 Kreise + Wert). -->
-      <div class="skill-prototype" id="skill-prototype">
-        <span class="proto-circle proto-prof"></span>
-        <span class="proto-circle proto-exp"></span>
-        <span class="proto-value">+0</span>
-      </div>
+      <!-- Kalibrier-Prototypen: nur im K-Modus sichtbar. Drei unabhängige
+           Elemente – Übung-Kreis, Expertise-Kreis und Wert. Positioniere
+           jedes einzeln (Kreise dürfen sich überlappen). -->
+      <div class="proto proto-prof"  id="proto-prof"  title="Übung"></div>
+      <div class="proto proto-exp"   id="proto-exp"   title="Expertise"></div>
+      <div class="proto proto-value" id="proto-value" title="Wert">+0</div>
 
       <!-- Waffen und Schadenszaubertricks (5 Zeilen) -->
       <div class="weapons">
@@ -169,6 +168,6 @@
 
   <div class="calibrate-hint">Kalibrier-Modus aktiv — Feld ziehen: verschieben · Rotes Eck ziehen: skalieren · dann "Layout exportieren"</div>
 
-  <script src="js/app.js?v=6"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>

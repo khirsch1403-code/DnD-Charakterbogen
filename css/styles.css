@@ -264,35 +264,43 @@ html, body {
 }
 .skill-row .skill-value { text-align: right; font-size: 15px; padding-right: 4px; }
 
-/* --- Skill-Prototyp (nur im Kalibrier-Modus sichtbar) ---
-   Eine einzelne, verschiebbare/skalierbare Skill-Reihe die zeigt,
-   wie eine Zeile aussehen soll: [prof-Kreis] [exp-Kreis] [Wert].
-   Nach dem Positionieren übernimmst du die Werte für alle 18 Reihen. */
-.skill-prototype {
+/* --- Skill-Prototypen (nur im Kalibrier-Modus sichtbar) ---
+   Drei einzeln verschieb-/skalierbare Elemente die zeigen, wie
+   Übung-Kreis, Expertise-Kreis und Wert-Feld an EINEM Skill sitzen
+   sollen. Kreise dürfen sich überlappen. Nach der Kalibrierung
+   klone ich diese drei an alle 18 Skills. */
+.proto {
   position: absolute;
-  left: 3.25%; top: 61%;
-  width: 12%; height: 2.5%;
   display: none;
-  align-items: center;
-  gap: 4px;
-  padding: 0 4px;
-  background: rgba(255, 240, 130, 0.5);
-  outline: 2px solid #b58a00;
-  z-index: 20;
+  z-index: 25;
+  box-sizing: border-box;
 }
-.sheet.calibrate .skill-prototype { display: flex; }
-.skill-prototype .proto-circle {
-  width: 10px; height: 10px;
-  border-radius: 50%;
+.sheet.calibrate .proto { display: block; }
+
+.proto-prof {
+  left: 4%; top: 63%;
+  width: 1.4%; height: 1.4%;
   background: #000;
-  flex: 0 0 auto;
+  border-radius: 50%;
+  outline: 2px solid #d81f1f;
 }
-.skill-prototype .proto-exp { opacity: 0.35; }
-.skill-prototype .proto-value {
-  flex: 1;
-  text-align: right;
+.proto-exp {
+  left: 5.2%; top: 63%;
+  width: 1.4%; height: 1.4%;
+  background: #000;
+  border-radius: 50%;
+  opacity: 0.55;
+  outline: 2px solid #1f5fd8;
+}
+.proto-value {
+  left: 7.5%; top: 63%;
+  width: 4%; height: 2%;
   font-size: 15px;
   font-weight: bold;
+  text-align: right;
+  background: rgba(255, 240, 130, 0.5);
+  outline: 2px solid #b58a00;
+  color: #000;
 }
 
 /* --- Waffen-Tabelle (5 Zeilen) --- */
