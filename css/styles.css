@@ -336,6 +336,19 @@ html, body {
   display: none;
 }
 body:has(.sheet.calibrate) .palette { display: block; }
+
+/* Führungslinien beim Snapping (im K-Modus) */
+.snap-guide {
+  position: absolute;
+  background: #ff2d55;
+  z-index: 50;
+  pointer-events: none;
+  display: none;
+  box-shadow: 0 0 3px rgba(255, 45, 85, 0.6);
+}
+.snap-guide.vertical   { top: 0; bottom: 0; width: 1px; }
+.snap-guide.horizontal { left: 0; right: 0; height: 1px; }
+.snap-guide.active { display: block; }
 .palette h3 { margin: 0 0 6px; font-size: 14px; color: #333; }
 .palette-hint { font-size: 11px; color: #666; margin: 0 0 10px; line-height: 1.35; }
 .palette label {

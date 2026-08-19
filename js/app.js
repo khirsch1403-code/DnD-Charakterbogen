@@ -285,15 +285,24 @@ function setupCalibrationDrag() {
 
       el.classList.add('dragging');
 
+      // Snap-Ziele einmal beim Drag-Start sammeln (alle sichtbaren anderen Draggables)
+      const snapTargets = collectSnapTargets(sheet, el, sheetRect);
+      const guides = ensureSnapGuides(sheet);
+
       const isCircle = el.classList.contains('circle');
       const move = (ev) => {
         const dxPct = (ev.clientX - startX) / sheetRect.width * 100;
         const dyPct = (ev.clientY - startY) / sheetRect.height * 100;
         if (mode === 'move') {
-          el.style.left = (startLeftPct + dxPct).toFixed(2) + '%';
-          el.style.top  = (startTopPct  + dyPct).toFixed(2) + '%';
+          let newLeft = startLeftPct + dxPct;
+          let newTop  = startTopPct  + dyPct;
+          const snap = applySnap(newLeft, newTop, startWPct, startHPct, snapTargets);
+          newLeft = snap.left;
+          newTop  = snap.top;
+          el.style.left = newLeft.toFixed(2) + '%';
+          el.style.top  = newTop.toFixed(2)  + '%';
+          showSnapGuides(guides, snap);
         } else if (isCircle) {
-          // Kreise bleiben 1:1 – nur Breite setzen, aspect-ratio in CSS macht Höhe
           const newW = Math.max(0.3, startWPct + dxPct);
           el.style.width  = newW.toFixed(2) + '%';
           el.style.height = '';
@@ -304,6 +313,7 @@ function setupCalibrationDrag() {
       };
       const up = () => {
         el.classList.remove('dragging');
+        hideSnapGuides(guides);
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
         saveLayoutToLocalStorage();
@@ -312,6 +322,103 @@ function setupCalibrationDrag() {
       document.addEventListener('mouseup', up);
     });
   });
+}
+
+// ============================================================
+// Snap-Funktionen (Ausrichtung an anderen Feldern)
+// ============================================================
+const SNAP_THRESHOLD_PCT = 0.4; // ~0.85 mm auf A4-Breite
+
+function collectSnapTargets(sheet, self, sheetRect) {
+  const xs = [];
+  const ys = [];
+  document.querySelectorAll('.draggable').forEach(el => {
+    if (el === self) return;
+    // versteckte Palette-Elemente überspringen
+    if (el.classList.contains('palette-field') && !el.classList.contains('pal-active')) return;
+    const r = el.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1) return;
+    const left   = (r.left  - sheetRect.left) / sheetRect.width  * 100;
+    const right  = (r.right - sheetRect.left) / sheetRect.width  * 100;
+    const cx     = (left + right) / 2;
+    const top    = (r.top    - sheetRect.top) / sheetRect.height * 100;
+    const bottom = (r.bottom - sheetRect.top) / sheetRect.height * 100;
+    const cy     = (top + bottom) / 2;
+    xs.push(left, right, cx);
+    ys.push(top, bottom, cy);
+  });
+  return { xs, ys };
+}
+
+function applySnap(left, top, w, h, targets) {
+  const result = { left, top, snapX: null, snapY: null };
+
+  // Kandidaten des zu bewegenden Elements: linke Kante, Mitte, rechte Kante
+  const candX = [left, left + w/2, left + w];
+  let bestX = { delta: Infinity, target: null };
+  candX.forEach((c, idx) => {
+    targets.xs.forEach(t => {
+      const d = t - c;
+      if (Math.abs(d) < Math.abs(bestX.delta) && Math.abs(d) <= SNAP_THRESHOLD_PCT) {
+        bestX = { delta: d, target: t };
+      }
+    });
+  });
+  if (bestX.target !== null) {
+    result.left = left + bestX.delta;
+    result.snapX = bestX.target;
+  }
+
+  const candY = [top, top + h/2, top + h];
+  let bestY = { delta: Infinity, target: null };
+  candY.forEach((c, idx) => {
+    targets.ys.forEach(t => {
+      const d = t - c;
+      if (Math.abs(d) < Math.abs(bestY.delta) && Math.abs(d) <= SNAP_THRESHOLD_PCT) {
+        bestY = { delta: d, target: t };
+      }
+    });
+  });
+  if (bestY.target !== null) {
+    result.top = top + bestY.delta;
+    result.snapY = bestY.target;
+  }
+
+  return result;
+}
+
+function ensureSnapGuides(sheet) {
+  let v = sheet.querySelector('.snap-guide.vertical');
+  let h = sheet.querySelector('.snap-guide.horizontal');
+  if (!v) {
+    v = document.createElement('div');
+    v.className = 'snap-guide vertical';
+    sheet.appendChild(v);
+  }
+  if (!h) {
+    h = document.createElement('div');
+    h.className = 'snap-guide horizontal';
+    sheet.appendChild(h);
+  }
+  return { v, h };
+}
+function showSnapGuides(guides, snap) {
+  if (snap.snapX !== null) {
+    guides.v.style.left = snap.snapX + '%';
+    guides.v.classList.add('active');
+  } else {
+    guides.v.classList.remove('active');
+  }
+  if (snap.snapY !== null) {
+    guides.h.style.top = snap.snapY + '%';
+    guides.h.classList.add('active');
+  } else {
+    guides.h.classList.remove('active');
+  }
+}
+function hideSnapGuides(guides) {
+  guides.v.classList.remove('active');
+  guides.h.classList.remove('active');
 }
 
 function collectLayout() {
