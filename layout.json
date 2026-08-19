@@ -1,0 +1,272 @@
+{
+  ".field-name": {
+    "left": "27.75%",
+    "top": "6.39%",
+    "width": null,
+    "height": null
+  },
+  ".field-level": {
+    "left": "46.63%",
+    "top": "3.43%",
+    "width": null,
+    "height": null
+  },
+  ".death-saves.failures": {
+    "left": "38.03%",
+    "top": "10.98%",
+    "width": "9.95%",
+    "height": "2.65%"
+  },
+  ".death-saves.successes": {
+    "left": "53.49%",
+    "top": "11.15%",
+    "width": null,
+    "height": null
+  },
+  ".field-str": {
+    "left": "7.9%",
+    "top": "19.56%",
+    "width": null,
+    "height": null
+  },
+  ".mod-str": {
+    "left": "6.64%",
+    "top": "22.27%",
+    "width": null,
+    "height": null
+  },
+  ".save-str-check": {
+    "left": null,
+    "top": null,
+    "width": null,
+    "height": null
+  },
+  ".save-str": {
+    "left": "10.15%",
+    "top": "25.46%",
+    "width": null,
+    "height": null
+  },
+  ".field-dex": {
+    "left": "7.9%",
+    "top": "32.68%",
+    "width": null,
+    "height": null
+  },
+  ".mod-dex": {
+    "left": "6.89%",
+    "top": "35.57%",
+    "width": null,
+    "height": null
+  },
+  ".save-dex-check": {
+    "left": null,
+    "top": null,
+    "width": null,
+    "height": null
+  },
+  ".save-dex": {
+    "left": "10.52%",
+    "top": "38.22%",
+    "width": null,
+    "height": null
+  },
+  ".field-con": {
+    "left": "8.28%",
+    "top": "45.55%",
+    "width": null,
+    "height": null
+  },
+  ".mod-con": {
+    "left": "7.39%",
+    "top": "48.26%",
+    "width": null,
+    "height": null
+  },
+  ".save-con-check": {
+    "left": null,
+    "top": null,
+    "width": null,
+    "height": null
+  },
+  ".save-con": {
+    "left": "10.52%",
+    "top": "51.01%",
+    "width": null,
+    "height": null
+  },
+  ".field-int": {
+    "left": "85.24%",
+    "top": "19.02%",
+    "width": null,
+    "height": null
+  },
+  ".mod-int": {
+    "left": "84.48%",
+    "top": "21.82%",
+    "width": null,
+    "height": null
+  },
+  ".save-int-check": {
+    "left": null,
+    "top": null,
+    "width": null,
+    "height": null
+  },
+  ".save-int": {
+    "left": "87.61%",
+    "top": "24.74%",
+    "width": null,
+    "height": null
+  },
+  ".field-wis": {
+    "left": "85.11%",
+    "top": "31.79%",
+    "width": null,
+    "height": null
+  },
+  ".mod-wis": {
+    "left": "85.36%",
+    "top": "34.68%",
+    "width": null,
+    "height": null
+  },
+  ".save-wis-check": {
+    "left": null,
+    "top": null,
+    "width": null,
+    "height": null
+  },
+  ".save-wis": {
+    "left": null,
+    "top": null,
+    "width": null,
+    "height": null
+  },
+  ".field-cha": {
+    "left": "85.11%",
+    "top": "44.4%",
+    "width": null,
+    "height": null
+  },
+  ".mod-cha": {
+    "left": "84.86%",
+    "top": "47.46%",
+    "width": "7.75%",
+    "height": "2.18%"
+  },
+  ".save-cha-check": {
+    "left": null,
+    "top": null,
+    "width": "2.27%",
+    "height": "1.07%"
+  },
+  ".save-cha": {
+    "left": "87.74%",
+    "top": "50.39%",
+    "width": null,
+    "height": null
+  },
+  ".portrait-drop": {
+    "left": "28.54%",
+    "top": "14.36%",
+    "width": "43.17%",
+    "height": "30.81%"
+  },
+  ".field-speed": {
+    "left": "21.66%",
+    "top": "25.86%",
+    "width": null,
+    "height": null
+  },
+  ".field-initiative": {
+    "left": "21.66%",
+    "top": "35.88%",
+    "width": null,
+    "height": null
+  },
+  ".field-size": {
+    "left": "71.84%",
+    "top": "25.78%",
+    "width": null,
+    "height": null
+  },
+  ".field-passive": {
+    "left": "71.84%",
+    "top": "35.79%",
+    "width": null,
+    "height": null
+  },
+  ".field-hp-current": {
+    "left": "26.61%",
+    "top": "46.03%",
+    "width": null,
+    "height": null
+  },
+  ".field-hp-max": {
+    "left": "31.28%",
+    "top": "46.04%",
+    "width": null,
+    "height": null
+  },
+  ".field-ac": {
+    "left": "47.63%",
+    "top": "45.86%",
+    "width": null,
+    "height": null
+  },
+  ".field-temp-hp": {
+    "left": "66%",
+    "top": "46.08%",
+    "width": null,
+    "height": null
+  },
+  ".field-prof-bonus": {
+    "left": "28.34%",
+    "top": "54.86%",
+    "width": null,
+    "height": null
+  },
+  ".field-hit-dice-current": {
+    "left": "44.48%",
+    "top": "55.87%",
+    "width": null,
+    "height": null
+  },
+  ".field-hit-dice-max": {
+    "left": "50.91%",
+    "top": "56.03%",
+    "width": null,
+    "height": null
+  },
+  ".field-inspiration": {
+    "left": "67.06%",
+    "top": "54.6%",
+    "width": null,
+    "height": null
+  },
+  ".jack-of-all": {
+    "left": "4%",
+    "top": "60.83%",
+    "width": "4.5%",
+    "height": "1.78%"
+  },
+  ".skills": {
+    "left": "3.25%",
+    "top": "62.92%",
+    "width": "32.5%",
+    "height": "34.96%"
+  },
+  ".weapons": {
+    "left": "40.52%",
+    "top": "64.96%",
+    "width": "54.84%",
+    "height": "9.18%"
+  },
+  ".features": {
+    "left": "39.13%",
+    "top": "76.15%",
+    "width": null,
+    "height": null
+  }
+}
