@@ -264,44 +264,6 @@ html, body {
 }
 .skill-row .skill-value { text-align: right; font-size: 15px; padding-right: 4px; }
 
-/* --- Skill-Prototypen (nur im Kalibrier-Modus sichtbar) ---
-   Drei einzeln verschieb-/skalierbare Elemente die zeigen, wie
-   Übung-Kreis, Expertise-Kreis und Wert-Feld an EINEM Skill sitzen
-   sollen. Kreise dürfen sich überlappen. Nach der Kalibrierung
-   klone ich diese drei an alle 18 Skills. */
-.proto {
-  position: absolute;
-  display: none;
-  z-index: 25;
-  box-sizing: border-box;
-}
-.sheet.calibrate .proto { display: block; }
-
-.proto-prof {
-  left: 4%; top: 63%;
-  width: 1.4%; height: 1.4%;
-  background: #000;
-  border-radius: 50%;
-  outline: 2px solid #d81f1f;
-}
-.proto-exp {
-  left: 5.2%; top: 63%;
-  width: 1.4%; height: 1.4%;
-  background: #000;
-  border-radius: 50%;
-  opacity: 0.55;
-  outline: 2px solid #1f5fd8;
-}
-.proto-value {
-  left: 7.5%; top: 63%;
-  width: 4%; height: 2%;
-  font-size: 15px;
-  font-weight: bold;
-  text-align: right;
-  background: rgba(255, 240, 130, 0.5);
-  outline: 2px solid #b58a00;
-  color: #000;
-}
 
 /* --- Waffen-Tabelle (5 Zeilen) --- */
 .weapons {
@@ -393,12 +355,13 @@ body:has(.sheet.calibrate) .palette { display: block; }
   color: #555; text-transform: uppercase; letter-spacing: 0.03em;
 }
 
-/* Palette-Felder (Wirkfelder auf dem Bogen): standardmäßig versteckt */
-.palette-field { display: none !important; }
-.palette-field.pal-active { display: block !important; }
-.palette-field.pal-active.circle { display: inline-block !important; }
+/* Alle über die Palette schaltbaren Elemente: standardmäßig versteckt.
+   Klasse .palette-field wird sowohl an vorhandene Elemente per JS
+   angeheftet, als auch an neu erstellte (Klasse, Spezies, etc.). */
+.palette-field:not(.pal-active) { display: none !important; }
 
-.palette-field {
+/* Styling nur für neu-erstellte Palette-Felder (Kopfdaten, Zauber, Münzen, …) */
+.palette-created {
   position: absolute;
   background: transparent;
   border: none;
@@ -408,7 +371,7 @@ body:has(.sheet.calibrate) .palette { display: block; }
   padding: 2px;
   outline: none;
 }
-.palette-field:focus {
+.palette-created:focus {
   background: var(--field-focus);
   border-radius: 3px;
 }

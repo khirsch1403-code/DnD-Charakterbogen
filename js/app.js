@@ -196,8 +196,10 @@ function setupToolbar() {
   $('btn-print').addEventListener('click', () => window.print());
 
   $('btn-reset').addEventListener('click', () => {
-    if (!confirm('Alle Eingaben zurücksetzen?')) return;
+    if (!confirm('Alles zurücksetzen: Inhalte, Layout und Palette-Aktivierungen werden gelöscht. Fortfahren?')) return;
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(LAYOUT_STORAGE_KEY);
+    localStorage.removeItem(PALETTE_STATE_KEY);
     location.reload();
   });
 
@@ -251,7 +253,6 @@ const DRAGGABLES = [
   { sel: '.field-hit-dice-max' }, { sel: '.field-inspiration' },
   { sel: '.jack-of-all' },
   { sel: '.skills', big: true }, { sel: '.weapons', big: true }, { sel: '.features', big: true },
-  { sel: '.proto-prof' }, { sel: '.proto-exp' }, { sel: '.proto-value' },
 ];
 
 const LAYOUT_STORAGE_KEY = 'dnd-charakterbogen-layout-v1';
@@ -390,48 +391,86 @@ document.addEventListener('DOMContentLoaded', () => {
 // Feld-Palette (rechte Sidebar, K-Modus)
 // ============================================================
 
-// Standard 5e-2024 Felder für die erste Seite eines Charakterbogens.
-// type: text | number | textarea | circle
-// group: Kategorie in der Palette
+// PALETTE_ITEMS enthält:
+//   type: 'existing' → Element ist bereits im DOM (nur toggeln)
+//   type: 'text' | 'number' | 'textarea' | 'circle' → wird dynamisch erzeugt
 const PALETTE_ITEMS = [
-  // Kopfdaten
-  { id: 'pal-class',       label: 'Klasse',               type: 'text',   group: 'Kopfdaten', w: 18, h: 2.5 },
-  { id: 'pal-subclass',    label: 'Unterklasse',          type: 'text',   group: 'Kopfdaten', w: 18, h: 2.5 },
-  { id: 'pal-species',     label: 'Spezies',              type: 'text',   group: 'Kopfdaten', w: 15, h: 2.5 },
-  { id: 'pal-background',  label: 'Hintergrund',          type: 'text',   group: 'Kopfdaten', w: 15, h: 2.5 },
-  { id: 'pal-alignment',   label: 'Ausrichtung',          type: 'text',   group: 'Kopfdaten', w: 15, h: 2.5 },
-  { id: 'pal-player-name', label: 'Spielername',          type: 'text',   group: 'Kopfdaten', w: 15, h: 2.5 },
-  { id: 'pal-xp',          label: 'Erfahrungspunkte',     type: 'number', group: 'Kopfdaten', w: 8,  h: 2.5 },
+  // ==== Kopf / Basis ====
+  { id: 'char-name',   label: 'Charaktername',    type: 'existing', group: 'Kopf' },
+  { id: 'char-level',  label: 'Charakterlevel',   type: 'existing', group: 'Kopf' },
+  { sel: '.portrait-drop', id: 'portrait-drop', label: 'Portrait',    type: 'existing', group: 'Kopf' },
+  { id: 'pal-class',       label: 'Klasse',               type: 'text',   group: 'Kopf', w: 18, h: 2.5 },
+  { id: 'pal-subclass',    label: 'Unterklasse',          type: 'text',   group: 'Kopf', w: 18, h: 2.5 },
+  { id: 'pal-species',     label: 'Spezies',              type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
+  { id: 'pal-background',  label: 'Hintergrund',          type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
+  { id: 'pal-alignment',   label: 'Ausrichtung',          type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
+  { id: 'pal-player-name', label: 'Spielername',          type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
+  { id: 'pal-xp',          label: 'Erfahrungspunkte',     type: 'number', group: 'Kopf', w: 8,  h: 2.5 },
 
-  // Zauber
-  { id: 'pal-spell-attr',  label: 'Zauber-Attribut',      type: 'text',   group: 'Zauberwerte', w: 8, h: 2.5 },
-  { id: 'pal-spell-dc',    label: 'Zauber-SG',            type: 'number', group: 'Zauberwerte', w: 6, h: 2.5 },
-  { id: 'pal-spell-atk',   label: 'Zauber-Angriffsbonus', type: 'number', group: 'Zauberwerte', w: 6, h: 2.5 },
+  // ==== Attribute STR/DEX/CON/INT/WIS/CHA ====
+  ...['str','dex','con','int','wis','cha'].flatMap(a => {
+    const A = a.toUpperCase();
+    return [
+      { sel: `.field-${a}`,      id: `${a}-score`,     label: `${A} Wert`,             type: 'existing', group: A },
+      { sel: `.mod-${a}`,        id: `${a}-mod`,       label: `${A} Modifikator`,      type: 'existing', group: A },
+      { sel: `.save-${a}-check`, id: `${a}-save-check`,label: `${A} Rettungswurf-Übung`, type: 'existing', group: A },
+      { sel: `.save-${a}`,       id: `${a}-save`,      label: `${A} Rettungswurf`,     type: 'existing', group: A },
+    ];
+  }),
 
-  // Kompetenzen & Sprachen
+  // ==== Werte-Boxen ====
+  { sel: '.field-speed',      id: 'speed',              label: 'Bewegung',           type: 'existing', group: 'Werte' },
+  { sel: '.field-initiative', id: 'initiative',         label: 'Initiative',         type: 'existing', group: 'Werte' },
+  { sel: '.field-size',       id: 'size',               label: 'Größe',              type: 'existing', group: 'Werte' },
+  { sel: '.field-passive',    id: 'passive-perception', label: 'Passive Wahrnehmung',type: 'existing', group: 'Werte' },
+  { sel: '.field-hp-current', id: 'hp-current',         label: 'HP aktuell',         type: 'existing', group: 'Werte' },
+  { sel: '.field-hp-max',     id: 'hp-max',             label: 'HP maximum',         type: 'existing', group: 'Werte' },
+  { sel: '.field-ac',         id: 'ac',                 label: 'Rüstungsklasse (AC)',type: 'existing', group: 'Werte' },
+  { sel: '.field-temp-hp',    id: 'temp-hp',            label: 'Temp HP',            type: 'existing', group: 'Werte' },
+  { sel: '.field-prof-bonus', id: 'prof-bonus',         label: 'Übungsbonus',        type: 'existing', group: 'Werte' },
+  { sel: '.field-hit-dice-current', id: 'hit-dice-current', label: 'Trefferwürfel aktuell', type: 'existing', group: 'Werte' },
+  { sel: '.field-hit-dice-max',     id: 'hit-dice-max',     label: 'Trefferwürfel max',     type: 'existing', group: 'Werte' },
+  { sel: '.field-inspiration',      id: 'inspiration',      label: 'Inspiration (Kreis)',   type: 'existing', group: 'Werte' },
+  { sel: '.jack-of-all',            id: 'jack-of-all',      label: 'Alleskönner (Kreis)',   type: 'existing', group: 'Werte' },
+  { sel: '.death-saves.failures',   id: 'ds-fails',         label: 'Todesrettung Fehler (3 Kreise)',  type: 'existing', group: 'Werte' },
+  { sel: '.death-saves.successes',  id: 'ds-successes',     label: 'Todesrettung Erfolge (3 Kreise)', type: 'existing', group: 'Werte' },
+
+  // ==== Skill-Prototypen (Kalibrierung; werden später auf 18 Skills geklont) ====
+  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle',   group: 'Skill-Prototyp', w: 1.4 },
+  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle',   group: 'Skill-Prototyp', w: 1.4 },
+  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',     group: 'Skill-Prototyp', w: 4, h: 2 },
+
+  // ==== Zauber ====
+  { id: 'pal-spell-attr',  label: 'Zauber-Attribut',      type: 'text',   group: 'Zauber', w: 8, h: 2.5 },
+  { id: 'pal-spell-dc',    label: 'Zauber-SG',            type: 'number', group: 'Zauber', w: 6, h: 2.5 },
+  { id: 'pal-spell-atk',   label: 'Zauber-Angriffsbonus', type: 'number', group: 'Zauber', w: 6, h: 2.5 },
+
+  // ==== Kompetenzen & Sprachen ====
   { id: 'pal-origin-feat', label: 'Herkunftstalent',      type: 'text',     group: 'Kompetenzen', w: 25, h: 2.5 },
   { id: 'pal-languages',   label: 'Sprachen',             type: 'textarea', group: 'Kompetenzen', w: 25, h: 6 },
   { id: 'pal-weapon-prof', label: 'Waffenkompetenzen',    type: 'textarea', group: 'Kompetenzen', w: 25, h: 6 },
   { id: 'pal-armor-prof',  label: 'Rüstungskompetenzen',  type: 'textarea', group: 'Kompetenzen', w: 25, h: 5 },
   { id: 'pal-tool-prof',   label: 'Werkzeugkompetenzen',  type: 'textarea', group: 'Kompetenzen', w: 25, h: 5 },
 
-  // Münzen
+  // ==== Waffen / Klassenmerkmale ====
+  { sel: '.weapons',  id: 'weapons-block',  label: 'Waffen-Tabelle (Block)',            type: 'existing', group: 'Blöcke' },
+  { sel: '.features', id: 'features-block', label: 'Klassenmerkmale (Textblock)',       type: 'existing', group: 'Blöcke' },
+  { sel: '.skills',   id: 'skills-block',   label: 'Skills-Container (Block)',          type: 'existing', group: 'Blöcke' },
+
+  // ==== Münzen ====
   { id: 'pal-cp', label: 'Kupfer (K)',   type: 'number', group: 'Münzen', w: 6, h: 2.5 },
   { id: 'pal-sp', label: 'Silber (S)',   type: 'number', group: 'Münzen', w: 6, h: 2.5 },
   { id: 'pal-ep', label: 'Elektrum (E)', type: 'number', group: 'Münzen', w: 6, h: 2.5 },
   { id: 'pal-gp', label: 'Gold (G)',     type: 'number', group: 'Münzen', w: 6, h: 2.5 },
   { id: 'pal-pp', label: 'Platin (P)',   type: 'number', group: 'Münzen', w: 6, h: 2.5 },
-
-  // Generisch
-  { id: 'pal-circle-1',    label: 'Generischer Kreis 1', type: 'circle',   group: 'Generisch', w: 2 },
-  { id: 'pal-circle-2',    label: 'Generischer Kreis 2', type: 'circle',   group: 'Generisch', w: 2 },
-  { id: 'pal-circle-3',    label: 'Generischer Kreis 3', type: 'circle',   group: 'Generisch', w: 2 },
-  { id: 'pal-text-1',      label: 'Freies Textfeld 1',   type: 'text',     group: 'Generisch', w: 15, h: 2.5 },
-  { id: 'pal-text-2',      label: 'Freies Textfeld 2',   type: 'text',     group: 'Generisch', w: 15, h: 2.5 },
-  { id: 'pal-textarea-1',  label: 'Freies Textblock 1',  type: 'textarea', group: 'Generisch', w: 25, h: 6 },
 ];
 
 const PALETTE_STATE_KEY = 'dnd-charakterbogen-palette-v1';
+
+function resolveItemElement(item) {
+  if (item.sel) return document.querySelector(item.sel);
+  return document.getElementById(item.id);
+}
 
 function buildPalette() {
   const inputLayer = document.querySelector('.input-layer');
@@ -450,17 +489,21 @@ function buildPalette() {
     list.appendChild(title);
 
     items.forEach(item => {
-      // Zugehöriges Feld auf dem Bogen anlegen (versteckt)
-      const field = createPaletteField(item);
-      inputLayer.appendChild(field);
-      DRAGGABLES.push({ sel: '#' + item.id, big: item.type === 'textarea' });
+      let el = resolveItemElement(item);
+      if (!el) {
+        // Neu erstellen (nicht 'existing')
+        el = createPaletteField(item);
+        inputLayer.appendChild(el);
+        DRAGGABLES.push({ sel: '#' + item.id, big: item.type === 'textarea' });
+      }
+      // Alle Palette-Elemente sind standardmäßig versteckt, bis der User sie aktiviert
+      el.classList.add('palette-field');
 
-      // Palette-Zeile mit Checkbox
       const row = document.createElement('label');
       row.innerHTML = `<input type="checkbox" data-pal-target="${item.id}" /> ${item.label}`;
       list.appendChild(row);
       row.querySelector('input').addEventListener('change', (e) => {
-        togglePaletteItem(item.id, e.target.checked);
+        togglePaletteItem(item, e.target.checked);
       });
     });
   });
@@ -475,7 +518,6 @@ function createPaletteField(item) {
       break;
     case 'circle':
       el = document.createElement('label');
-      el.className = 'circle';
       el.innerHTML = `<input type="checkbox" data-save id="${item.id}-cb" />`;
       break;
     case 'number':
@@ -489,10 +531,9 @@ function createPaletteField(item) {
       el.placeholder = item.label;
   }
   el.id = item.id;
-  el.classList.add('palette-field');
+  el.classList.add('palette-created');
   if (item.type === 'circle') el.classList.add('circle');
-  el.setAttribute('data-save', '');
-  // Default-Position links oben auf dem Bogen (außerhalb sichtbarer Design-Elemente)
+  if (item.type !== 'circle') el.setAttribute('data-save', '');
   el.style.left = '2%';
   el.style.top = '2%';
   el.style.width = item.w + '%';
@@ -500,8 +541,8 @@ function createPaletteField(item) {
   return el;
 }
 
-function togglePaletteItem(id, on) {
-  const el = document.getElementById(id);
+function togglePaletteItem(item, on) {
+  const el = resolveItemElement(item);
   if (!el) return;
   el.classList.toggle('pal-active', on);
   savePaletteState();
@@ -511,7 +552,7 @@ function togglePaletteItem(id, on) {
 function collectPaletteState() {
   const state = {};
   PALETTE_ITEMS.forEach(item => {
-    const el = document.getElementById(item.id);
+    const el = resolveItemElement(item);
     state[item.id] = el ? el.classList.contains('pal-active') : false;
   });
   return state;
@@ -527,11 +568,12 @@ function restorePaletteState() {
     const raw = localStorage.getItem(PALETTE_STATE_KEY);
     if (!raw) return;
     const state = JSON.parse(raw);
-    Object.entries(state).forEach(([id, on]) => {
-      const el = document.getElementById(id);
+    PALETTE_ITEMS.forEach(item => {
+      const on = !!state[item.id];
+      const el = resolveItemElement(item);
       if (el && on) el.classList.add('pal-active');
-      const cb = document.querySelector(`[data-pal-target="${id}"]`);
-      if (cb) cb.checked = !!on;
+      const cb = document.querySelector(`[data-pal-target="${item.id}"]`);
+      if (cb) cb.checked = on;
     });
   } catch (e) { console.warn(e); }
 }
