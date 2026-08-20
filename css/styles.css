@@ -207,14 +207,20 @@ html, body {
 .mod-cha        { left: 84.86%; top: 47.46%; width: 7.75%; height: 2.18%; font-size: 15px; color:#555; }
 .save-cha       { left: 87.74%; top: 50.39%; width: 5.5%;  height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
-/* --- Neue Rettungswurf-Übungs-Marker: 20px, fest 1:1, Startposition mittig --- */
+/* --- Rettungswurf-Übungs-Marker (kalibriert an DEX = 6.82% / 39.03% / 1.6%) ---
+   Linke Bahn (STR/DEX/CON) und rechte Bahn (INT/WIS/CHA) gespiegelt.
+   Vertikaler Offset zum Attribut-Wert konstant 6.35%. */
 .save-str-mark, .save-dex-mark, .save-con-mark,
 .save-int-mark, .save-wis-mark, .save-cha-mark {
   position: absolute;
-  width: 20px;
-  left: calc(50% - 10px);
-  top: calc(50% - 10px);
+  width: 1.6%;
 }
+.save-str-mark { left: 6.82%;  top: 25.91%; }
+.save-dex-mark { left: 6.82%;  top: 39.03%; }
+.save-con-mark { left: 6.82%;  top: 51.90%; }
+.save-int-mark { left: 91.58%; top: 25.37%; }
+.save-wis-mark { left: 91.58%; top: 38.14%; }
+.save-cha-mark { left: 91.58%; top: 50.75%; }
 
 /* --- ZENTRALES PORTRAIT --- */
 .portrait-drop {

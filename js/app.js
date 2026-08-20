@@ -39,7 +39,7 @@ const proficiencyBonus = (level) => {
 //   0 = leer, 1 = Übung, 2 = Übung + Expertise, dann zurück auf 0.
 // Positionen leiten sich vom Skill-Prototyp (Palette) und einer Zeilen-
 // Schrittgröße ab; die Reihen sind gleichmäßig auf den Skill-Bereich verteilt.
-const SKILL_ROW_STEP = 1.62; // % pro Zeile (18 Skills = ~29% vertikal)
+const SKILL_ROW_STEP = 1.94; // % pro Zeile (18 Skills = ~35% vertikal, passt zum Design)
 const skillStates = {};      // { skill-id: 0|1|2 }
 
 function buildSkillsUI() {
@@ -630,14 +630,23 @@ const PALETTE_ITEMS = [
 
   // ==== Attribute STR/DEX/CON/INT/WIS/CHA ====
   ...(() => {
-    // Rettungswurf-Übungs-Marker starten mittig (calc-basiert, 20px fix)
+    // Rettungswurf-Übungs-Marker: kalibriert an DEX (6.82% / 39.03% / 1.6%)
+    const SAVE_MARK_DEFAULTS = {
+      str: { l: '6.82%',  t: '25.91%' },
+      dex: { l: '6.82%',  t: '39.03%' },
+      con: { l: '6.82%',  t: '51.90%' },
+      int: { l: '91.58%', t: '25.37%' },
+      wis: { l: '91.58%', t: '38.14%' },
+      cha: { l: '91.58%', t: '50.75%' },
+    };
     return ['str','dex','con','int','wis','cha'].flatMap(a => {
       const A = a.toUpperCase();
+      const sm = SAVE_MARK_DEFAULTS[a];
       return [
         { sel: `.field-${a}`,     id: `${a}-score`, label: `${A} Wert`,        type: 'existing', group: A },
         { sel: `.mod-${a}`,       id: `${a}-mod`,   label: `${A} Modifikator`, type: 'existing', group: A },
         { sel: `.save-${a}-mark`, id: `${a}-save-mark`, label: `${A} Rettungswurf-Übung (Kreis)`, type: 'existing', group: A,
-          defaultLeft: 'calc(50% - 10px)', defaultTop: 'calc(50% - 10px)', wPx: 20 },
+          defaultLeft: sm.l, defaultTop: sm.t, w: 1.6 },
         { sel: `.save-${a}`,      id: `${a}-save`,  label: `${A} Rettungswurf`, type: 'existing', group: A },
       ];
     });
