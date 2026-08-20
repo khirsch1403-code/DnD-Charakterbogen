@@ -339,12 +339,12 @@ const DRAGGABLES = [
   { sel: '.field-name' }, { sel: '.field-level' },
   { sel: '.ds-f1' }, { sel: '.ds-f2' }, { sel: '.ds-f3' },
   { sel: '.ds-s1' }, { sel: '.ds-s2' }, { sel: '.ds-s3' },
-  { sel: '.field-str' }, { sel: '.mod-str' }, { sel: '.save-str-check' }, { sel: '.save-str' },
-  { sel: '.field-dex' }, { sel: '.mod-dex' }, { sel: '.save-dex-check' }, { sel: '.save-dex' },
-  { sel: '.field-con' }, { sel: '.mod-con' }, { sel: '.save-con-check' }, { sel: '.save-con' },
-  { sel: '.field-int' }, { sel: '.mod-int' }, { sel: '.save-int-check' }, { sel: '.save-int' },
-  { sel: '.field-wis' }, { sel: '.mod-wis' }, { sel: '.save-wis-check' }, { sel: '.save-wis' },
-  { sel: '.field-cha' }, { sel: '.mod-cha' }, { sel: '.save-cha-check' }, { sel: '.save-cha' },
+  { sel: '.field-str' }, { sel: '.mod-str' }, { sel: '.save-str-mark' }, { sel: '.save-str' },
+  { sel: '.field-dex' }, { sel: '.mod-dex' }, { sel: '.save-dex-mark' }, { sel: '.save-dex' },
+  { sel: '.field-con' }, { sel: '.mod-con' }, { sel: '.save-con-mark' }, { sel: '.save-con' },
+  { sel: '.field-int' }, { sel: '.mod-int' }, { sel: '.save-int-mark' }, { sel: '.save-int' },
+  { sel: '.field-wis' }, { sel: '.mod-wis' }, { sel: '.save-wis-mark' }, { sel: '.save-wis' },
+  { sel: '.field-cha' }, { sel: '.mod-cha' }, { sel: '.save-cha-mark' }, { sel: '.save-cha' },
   { sel: '.portrait-drop', big: true },
   { sel: '.field-speed' }, { sel: '.field-initiative' },
   { sel: '.field-size' }, { sel: '.field-passive' },
@@ -630,24 +630,15 @@ const PALETTE_ITEMS = [
 
   // ==== Attribute STR/DEX/CON/INT/WIS/CHA ====
   ...(() => {
-    // Defaults für die Rettungswurf-Übungs-Kreise (aus CSS)
-    const SAVE_CHECK_DEFAULTS = {
-      str: { l: '8.05%',  t: '25.76%' },
-      dex: { l: '8.42%',  t: '38.52%' },
-      con: { l: '8.42%',  t: '51.31%' },
-      int: { l: '85.51%', t: '25.04%' },
-      wis: { l: '85.51%', t: '37.90%' },
-      cha: { l: '85.64%', t: '50.69%' },
-    };
+    // Rettungswurf-Übungs-Marker starten mittig (calc-basiert, 20px fix)
     return ['str','dex','con','int','wis','cha'].flatMap(a => {
       const A = a.toUpperCase();
-      const sc = SAVE_CHECK_DEFAULTS[a];
       return [
-        { sel: `.field-${a}`,      id: `${a}-score`,     label: `${A} Wert`,             type: 'existing', group: A },
-        { sel: `.mod-${a}`,        id: `${a}-mod`,       label: `${A} Modifikator`,      type: 'existing', group: A },
-        { sel: `.save-${a}-check`, id: `${a}-save-check`,label: `${A} Rettungswurf-Übung (Kreis)`, type: 'existing', group: A,
-          defaultLeft: sc.l, defaultTop: sc.t, w: 1.62 },
-        { sel: `.save-${a}`,       id: `${a}-save`,      label: `${A} Rettungswurf`,     type: 'existing', group: A },
+        { sel: `.field-${a}`,     id: `${a}-score`, label: `${A} Wert`,        type: 'existing', group: A },
+        { sel: `.mod-${a}`,       id: `${a}-mod`,   label: `${A} Modifikator`, type: 'existing', group: A },
+        { sel: `.save-${a}-mark`, id: `${a}-save-mark`, label: `${A} Rettungswurf-Übung (Kreis)`, type: 'existing', group: A,
+          defaultLeft: 'calc(50% - 10px)', defaultTop: 'calc(50% - 10px)', wPx: 20 },
+        { sel: `.save-${a}`,      id: `${a}-save`,  label: `${A} Rettungswurf`, type: 'existing', group: A },
       ];
     });
   })(),
@@ -675,9 +666,9 @@ const PALETTE_ITEMS = [
   { id: 'pal-shield', label: 'Schild (Raute, +2 auf AC)', type: 'diamond', group: 'Werte', w: 1.62, defaultLeft: '49.01%', defaultTop: '50.44%' },
 
   // ==== Skill-Prototypen (Kalibrierung; werden später auf 18 Skills geklont) ====
-  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle', group: 'Skill-Prototyp', w: 1.62, defaultLeft: '4.85%',  defaultTop: '69.05%' },
-  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle', group: 'Skill-Prototyp', w: 1.62, defaultLeft: '6.08%',  defaultTop: '69.05%' },
-  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',  group: 'Skill-Prototyp', w: 4.63, h: 1.82, defaultLeft: '30.03%', defaultTop: '68.62%' },
+  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle', group: 'Skill-Prototyp (nur Kalibrierung)', w: 1.62, defaultLeft: '4.85%',  defaultTop: '69.05%' },
+  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle', group: 'Skill-Prototyp (nur Kalibrierung)', w: 1.62, defaultLeft: '6.08%',  defaultTop: '69.05%' },
+  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',  group: 'Skill-Prototyp (nur Kalibrierung)', w: 4.63, h: 1.82, defaultLeft: '30.03%', defaultTop: '68.62%' },
 
   // ==== Zauber ====
   { id: 'pal-spell-attr',  label: 'Zauber-Attribut',      type: 'text',   group: 'Zauber', w: 8, h: 2.5 },
@@ -811,13 +802,18 @@ function togglePaletteItem(item, on) {
 // Formen (circle/diamond/xmark) bei EXPLIZITER Aktivierung via Palette-
 // Checkbox: immer Default-Breite. So bekommt der User eine vorhersagbare
 // Ausgangsgröße (Skill-Prototyp-Maß 1.62%).
+function shapeDefaultWidth(item) {
+  if (item && item.wPx) return item.wPx + 'px';
+  if (item && item.w)   return item.w + '%';
+  return '1.62%';
+}
+
 function normalizeShapeSize(el, item) {
   const isShape = el.classList.contains('circle')
                || el.classList.contains('diamond')
                || el.classList.contains('xmark');
   if (!isShape) return;
-  const w = (item && item.w) ? item.w : 1.62;
-  el.style.width  = w + '%';
+  el.style.width  = shapeDefaultWidth(item);
   el.style.height = '';
 }
 
@@ -833,7 +829,7 @@ function healBrokenShapeSize(el, item) {
   const r = el.getBoundingClientRect();
   const broken = r.width > sheetRect.width * 0.15 || r.width < 2;
   if (broken) {
-    el.style.width  = ((item && item.w) || 1.62) + '%';
+    el.style.width  = shapeDefaultWidth(item);
     el.style.height = '';
   }
 }
@@ -845,12 +841,13 @@ function recallPaletteItem(item) {
   if (!el) return;
   el.style.left = item.defaultLeft || '45%';
   el.style.top  = item.defaultTop  || '45%';
-  // Größe zurücksetzen (nur wenn item.w bekannt, sonst CSS-Default)
-  if (item.w) el.style.width = item.w + '%';
-  else el.style.width = '';
+  // Größe zurücksetzen: wPx > w > CSS-Default
+  if (item.wPx)    el.style.width = item.wPx + 'px';
+  else if (item.w) el.style.width = item.w + '%';
+  else             el.style.width = '';
   if (el.classList.contains('circle') || el.classList.contains('diamond') || el.classList.contains('xmark')) {
     el.style.height = '';               // 1:1-Formen: Höhe aus aspect-ratio
-    if (!item.w) el.style.width = '2%';  // Mindestgröße für Sichtbarkeit
+    if (!item.w && !item.wPx) el.style.width = '2%';
   } else if (item.h) {
     el.style.height = item.h + '%';
   } else {
