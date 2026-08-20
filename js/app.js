@@ -205,6 +205,11 @@ function setupToolbar() {
 
   const toggleCalibrate = () => document.getElementById('sheet').classList.toggle('calibrate');
   $('btn-calibrate').addEventListener('click', toggleCalibrate);
+  const snapToggle = $('btn-snap');
+  if (snapToggle) {
+    SNAP_ENABLED = snapToggle.checked;
+    snapToggle.addEventListener('change', (e) => { SNAP_ENABLED = e.target.checked; });
+  }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'k' || e.key === 'K') {
       if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
@@ -237,7 +242,8 @@ function setupToolbar() {
 // Alle verschiebbaren Elemente. Große Blöcke bekommen '.big' zusätzlich.
 const DRAGGABLES = [
   { sel: '.field-name' }, { sel: '.field-level' },
-  { sel: '.death-saves.failures', big: true }, { sel: '.death-saves.successes', big: true },
+  { sel: '.ds-f1' }, { sel: '.ds-f2' }, { sel: '.ds-f3' },
+  { sel: '.ds-s1' }, { sel: '.ds-s2' }, { sel: '.ds-s3' },
   { sel: '.field-str' }, { sel: '.mod-str' }, { sel: '.save-str-check' }, { sel: '.save-str' },
   { sel: '.field-dex' }, { sel: '.mod-dex' }, { sel: '.save-dex-check' }, { sel: '.save-dex' },
   { sel: '.field-con' }, { sel: '.mod-con' }, { sel: '.save-con-check' }, { sel: '.save-con' },
@@ -252,7 +258,10 @@ const DRAGGABLES = [
   { sel: '.field-prof-bonus' }, { sel: '.field-hit-dice-current' },
   { sel: '.field-hit-dice-max' }, { sel: '.field-inspiration' },
   { sel: '.jack-of-all' },
-  { sel: '.skills', big: true }, { sel: '.weapons', big: true }, { sel: '.features', big: true },
+  { sel: '.skills', big: true },
+  { sel: '.wc-name' },  { sel: '.wc-bonus' }, { sel: '.wc-damage' },
+  { sel: '.wc-type' },  { sel: '.wc-note' },
+  { sel: '.features', big: true },
 ];
 
 const LAYOUT_STORAGE_KEY = 'dnd-charakterbogen-layout-v1';
@@ -289,14 +298,19 @@ function setupCalibrationDrag() {
       const snapTargets = collectSnapTargets(sheet, el, sheetRect);
       const guides = ensureSnapGuides(sheet);
 
-      const isCircle = el.classList.contains('circle');
+      const isSquareShape = el.classList.contains('circle')
+                          || el.classList.contains('diamond')
+                          || el.classList.contains('xmark');
+      const isCircle = isSquareShape;
       const move = (ev) => {
         const dxPct = (ev.clientX - startX) / sheetRect.width * 100;
         const dyPct = (ev.clientY - startY) / sheetRect.height * 100;
         if (mode === 'move') {
           let newLeft = startLeftPct + dxPct;
           let newTop  = startTopPct  + dyPct;
-          const snap = applySnap(newLeft, newTop, startWPct, startHPct, snapTargets);
+          const snap = SNAP_ENABLED
+            ? applySnap(newLeft, newTop, startWPct, startHPct, snapTargets)
+            : { left: newLeft, top: newTop, snapX: null, snapY: null };
           newLeft = snap.left;
           newTop  = snap.top;
           // Innerhalb des Bogens halten – so kann nichts "verschwinden"
@@ -332,6 +346,7 @@ function setupCalibrationDrag() {
 // Snap-Funktionen (Ausrichtung an anderen Feldern)
 // ============================================================
 const SNAP_THRESHOLD_PCT = 0.4; // ~0.85 mm auf A4-Breite
+let SNAP_ENABLED = true;
 
 function collectSnapTargets(sheet, self, sheetRect) {
   const xs = [];
@@ -519,15 +534,28 @@ const PALETTE_ITEMS = [
   { id: 'pal-xp',          label: 'Erfahrungspunkte',     type: 'number', group: 'Kopf', w: 8,  h: 2.5 },
 
   // ==== Attribute STR/DEX/CON/INT/WIS/CHA ====
-  ...['str','dex','con','int','wis','cha'].flatMap(a => {
-    const A = a.toUpperCase();
-    return [
-      { sel: `.field-${a}`,      id: `${a}-score`,     label: `${A} Wert`,             type: 'existing', group: A },
-      { sel: `.mod-${a}`,        id: `${a}-mod`,       label: `${A} Modifikator`,      type: 'existing', group: A },
-      { sel: `.save-${a}-check`, id: `${a}-save-check`,label: `${A} Rettungswurf-Übung`, type: 'existing', group: A },
-      { sel: `.save-${a}`,       id: `${a}-save`,      label: `${A} Rettungswurf`,     type: 'existing', group: A },
-    ];
-  }),
+  ...(() => {
+    // Defaults für die Rettungswurf-Übungs-Kreise (aus CSS)
+    const SAVE_CHECK_DEFAULTS = {
+      str: { l: '8.05%',  t: '25.76%' },
+      dex: { l: '8.42%',  t: '38.52%' },
+      con: { l: '8.42%',  t: '51.31%' },
+      int: { l: '85.51%', t: '25.04%' },
+      wis: { l: '85.51%', t: '37.90%' },
+      cha: { l: '85.64%', t: '50.69%' },
+    };
+    return ['str','dex','con','int','wis','cha'].flatMap(a => {
+      const A = a.toUpperCase();
+      const sc = SAVE_CHECK_DEFAULTS[a];
+      return [
+        { sel: `.field-${a}`,      id: `${a}-score`,     label: `${A} Wert`,             type: 'existing', group: A },
+        { sel: `.mod-${a}`,        id: `${a}-mod`,       label: `${A} Modifikator`,      type: 'existing', group: A },
+        { sel: `.save-${a}-check`, id: `${a}-save-check`,label: `${A} Rettungswurf-Übung (Kreis)`, type: 'existing', group: A,
+          defaultLeft: sc.l, defaultTop: sc.t, w: 1.4 },
+        { sel: `.save-${a}`,       id: `${a}-save`,      label: `${A} Rettungswurf`,     type: 'existing', group: A },
+      ];
+    });
+  })(),
 
   // ==== Werte-Boxen ====
   { sel: '.field-speed',      id: 'speed',              label: 'Bewegung',           type: 'existing', group: 'Werte' },
@@ -543,14 +571,18 @@ const PALETTE_ITEMS = [
   { sel: '.field-hit-dice-max',     id: 'hit-dice-max',     label: 'Trefferwürfel max',     type: 'existing', group: 'Werte' },
   { sel: '.field-inspiration',      id: 'inspiration',      label: 'Inspiration (Kreis)',   type: 'existing', group: 'Werte' },
   { sel: '.jack-of-all',            id: 'jack-of-all',      label: 'Alleskönner (Kreis)',   type: 'existing', group: 'Werte' },
-  { sel: '.death-saves.failures',   id: 'ds-fails',         label: 'Todesrettung Fehler (3 Kreise)',  type: 'existing', group: 'Werte' },
-  { sel: '.death-saves.successes',  id: 'ds-successes',     label: 'Todesrettung Erfolge (3 Kreise)', type: 'existing', group: 'Werte' },
-  { id: 'pal-shield', label: 'Schild (Kreis, +2 auf AC)', type: 'circle', group: 'Werte', w: 2, defaultLeft: '49%', defaultTop: '49%' },
+  { sel: '.ds-f1', id: 'ds-f1-cell', label: 'Todesrettung Fehler 1 (X)', type: 'existing', group: 'Werte' },
+  { sel: '.ds-f2', id: 'ds-f2-cell', label: 'Todesrettung Fehler 2 (X)', type: 'existing', group: 'Werte' },
+  { sel: '.ds-f3', id: 'ds-f3-cell', label: 'Todesrettung Fehler 3 (X)', type: 'existing', group: 'Werte' },
+  { sel: '.ds-s1', id: 'ds-s1-cell', label: 'Todesrettung Erfolg 1 (X)', type: 'existing', group: 'Werte' },
+  { sel: '.ds-s2', id: 'ds-s2-cell', label: 'Todesrettung Erfolg 2 (X)', type: 'existing', group: 'Werte' },
+  { sel: '.ds-s3', id: 'ds-s3-cell', label: 'Todesrettung Erfolg 3 (X)', type: 'existing', group: 'Werte' },
+  { id: 'pal-shield', label: 'Schild (Raute, +2 auf AC)', type: 'diamond', group: 'Werte', w: 1.62, defaultLeft: '49.01%', defaultTop: '50.44%' },
 
   // ==== Skill-Prototypen (Kalibrierung; werden später auf 18 Skills geklont) ====
-  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle',   group: 'Skill-Prototyp', w: 3.12, defaultLeft: '4.07%',  defaultTop: '68.35%' },
-  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle',   group: 'Skill-Prototyp', w: 2.03, defaultLeft: '5.63%',  defaultTop: '68.74%' },
-  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',     group: 'Skill-Prototyp', w: 4, h: 2, defaultLeft: '30.03%', defaultTop: '68.56%' },
+  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle', group: 'Skill-Prototyp', w: 1.62, defaultLeft: '4.85%',  defaultTop: '69.05%' },
+  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle', group: 'Skill-Prototyp', w: 1.62, defaultLeft: '6.08%',  defaultTop: '69.05%' },
+  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',  group: 'Skill-Prototyp', w: 4.63, h: 1.82, defaultLeft: '30.03%', defaultTop: '68.62%' },
 
   // ==== Zauber ====
   { id: 'pal-spell-attr',  label: 'Zauber-Attribut',      type: 'text',   group: 'Zauber', w: 8, h: 2.5 },
@@ -564,10 +596,16 @@ const PALETTE_ITEMS = [
   { id: 'pal-armor-prof',  label: 'Rüstungskompetenzen',  type: 'textarea', group: 'Kompetenzen', w: 25, h: 5 },
   { id: 'pal-tool-prof',   label: 'Werkzeugkompetenzen',  type: 'textarea', group: 'Kompetenzen', w: 25, h: 5 },
 
-  // ==== Waffen / Klassenmerkmale ====
-  { sel: '.weapons',  id: 'weapons-block',  label: 'Waffen-Tabelle (Block)',            type: 'existing', group: 'Blöcke' },
-  { sel: '.features', id: 'features-block', label: 'Klassenmerkmale (Textblock)',       type: 'existing', group: 'Blöcke' },
-  { sel: '.skills',   id: 'skills-block',   label: 'Skills-Container (Block)',          type: 'existing', group: 'Blöcke' },
+  // ==== Waffen-Spalten (jede einzeln positioniert & skaliert) ====
+  { sel: '.wc-name',   id: 'wc-name',   label: 'Waffen — Name-Spalte',   type: 'existing', group: 'Waffen' },
+  { sel: '.wc-bonus',  id: 'wc-bonus',  label: 'Waffen — Bonus-Spalte',  type: 'existing', group: 'Waffen' },
+  { sel: '.wc-damage', id: 'wc-damage', label: 'Waffen — Schaden-Spalte',type: 'existing', group: 'Waffen' },
+  { sel: '.wc-type',   id: 'wc-type',   label: 'Waffen — Art-Spalte',    type: 'existing', group: 'Waffen' },
+  { sel: '.wc-note',   id: 'wc-note',   label: 'Waffen — Notiz-Spalte',  type: 'existing', group: 'Waffen' },
+
+  // ==== Klassenmerkmale / Skills-Container ====
+  { sel: '.features', id: 'features-block', label: 'Klassenmerkmale (Textblock)', type: 'existing', group: 'Blöcke' },
+  { sel: '.skills',   id: 'skills-block',   label: 'Skills-Container (Block)',    type: 'existing', group: 'Blöcke' },
 
   // ==== Münzen ====
   { id: 'pal-cp', label: 'Kupfer (K)',   type: 'number', group: 'Münzen', w: 6, h: 2.5 },
@@ -636,6 +674,8 @@ function createPaletteField(item) {
       el.placeholder = item.label;
       break;
     case 'circle':
+    case 'diamond':
+    case 'xmark':
       el = document.createElement('label');
       el.innerHTML = `<input type="checkbox" data-save id="${item.id}-cb" />`;
       break;
@@ -651,12 +691,13 @@ function createPaletteField(item) {
   }
   el.id = item.id;
   el.classList.add('palette-created');
-  if (item.type === 'circle') el.classList.add('circle');
-  if (item.type !== 'circle') el.setAttribute('data-save', '');
+  const shapeTypes = ['circle', 'diamond', 'xmark'];
+  if (shapeTypes.includes(item.type)) el.classList.add(item.type);
+  if (!shapeTypes.includes(item.type)) el.setAttribute('data-save', '');
   el.style.left = item.defaultLeft || '2%';
   el.style.top  = item.defaultTop  || '2%';
   el.style.width = item.w + '%';
-  if (item.type !== 'circle' && item.h) el.style.height = item.h + '%';
+  if (!shapeTypes.includes(item.type) && item.h) el.style.height = item.h + '%';
   return el;
 }
 
@@ -679,8 +720,8 @@ function recallPaletteItem(item) {
   // Größe zurücksetzen (nur wenn item.w bekannt, sonst CSS-Default)
   if (item.w) el.style.width = item.w + '%';
   else el.style.width = '';
-  if (el.classList.contains('circle')) {
-    el.style.height = '';               // Kreise: Höhe aus aspect-ratio
+  if (el.classList.contains('circle') || el.classList.contains('diamond') || el.classList.contains('xmark')) {
+    el.style.height = '';               // 1:1-Formen: Höhe aus aspect-ratio
     if (!item.w) el.style.width = '2%';  // Mindestgröße für Sichtbarkeit
   } else if (item.h) {
     el.style.height = item.h + '%';

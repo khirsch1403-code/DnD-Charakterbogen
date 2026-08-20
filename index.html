@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>D&D Charakterbogen</title>
-  <link rel="stylesheet" href="css/styles.css?v=12" />
+  <link rel="stylesheet" href="css/styles.css?v=13" />
 </head>
 <body>
   <div class="toolbar no-print">
@@ -16,6 +16,7 @@
     <button id="btn-print">Drucken / PDF</button>
     <button id="btn-reset">Zurücksetzen</button>
     <button id="btn-calibrate">Kalibrier-Modus (K)</button>
+    <label class="toolbar-toggle"><input type="checkbox" id="btn-snap" checked /> Snap</label>
     <button id="btn-export-layout" title="Aktuelle Feld-Positionen als JSON herunterladen">Layout exportieren</button>
     <label class="btn-like" title="Zuvor exportiertes Layout laden">
       Layout laden
@@ -34,17 +35,13 @@
       <!-- Charakterlevel -->
       <input type="number" min="1" max="20" class="field field-level" id="char-level" placeholder="1" data-save />
 
-      <!-- Death Saves: 3 Fehlschläge (links vom Totenkopf), 3 Erfolge (rechts) -->
-      <div class="death-saves failures">
-        <label class="circle"><input type="checkbox" data-save id="ds-f1" /></label>
-        <label class="circle"><input type="checkbox" data-save id="ds-f2" /></label>
-        <label class="circle"><input type="checkbox" data-save id="ds-f3" /></label>
-      </div>
-      <div class="death-saves successes">
-        <label class="circle"><input type="checkbox" data-save id="ds-s1" /></label>
-        <label class="circle"><input type="checkbox" data-save id="ds-s2" /></label>
-        <label class="circle"><input type="checkbox" data-save id="ds-s3" /></label>
-      </div>
+      <!-- Todesrettungen als 6 einzelne X-Toggle-Kästen -->
+      <label class="ds-cell ds-f1 xmark"><input type="checkbox" data-save id="ds-f1" /></label>
+      <label class="ds-cell ds-f2 xmark"><input type="checkbox" data-save id="ds-f2" /></label>
+      <label class="ds-cell ds-f3 xmark"><input type="checkbox" data-save id="ds-f3" /></label>
+      <label class="ds-cell ds-s1 xmark"><input type="checkbox" data-save id="ds-s1" /></label>
+      <label class="ds-cell ds-s2 xmark"><input type="checkbox" data-save id="ds-s2" /></label>
+      <label class="ds-cell ds-s3 xmark"><input type="checkbox" data-save id="ds-s3" /></label>
 
       <!-- Attribute (linkes Banner: STR / DEX / CON) -->
       <input type="number" class="field field-str" id="str-score" placeholder="10" data-save />
@@ -101,53 +98,51 @@
       <div class="field field-prof-bonus" id="prof-bonus">+2</div>
       <input type="text" class="field field-hit-dice-current" id="hit-dice-current" placeholder="1" data-save />
       <input type="text" class="field field-hit-dice-max" id="hit-dice-max" placeholder="1d8" data-save />
-      <label class="field-inspiration circle">
+      <label class="field-inspiration diamond">
         <input type="checkbox" id="inspiration" data-save />
       </label>
 
       <!-- Alleskönner (Jack of All Trades) -->
-      <label class="jack-of-all circle"><input type="checkbox" id="jack-of-all" data-save /></label>
+      <label class="jack-of-all diamond"><input type="checkbox" id="jack-of-all" data-save /></label>
 
       <!-- Fertigkeiten (Skills) -->
       <div class="skills" id="skills"></div>
 
-<!-- Waffen und Schadenszaubertricks (5 Zeilen) -->
-      <div class="weapons">
-        <div class="weapon-row">
-          <input type="text" placeholder="Name" data-save id="w1-name" />
-          <input type="text" placeholder="+0 / 0" data-save id="w1-bonus" />
-          <input type="text" placeholder="1d6" data-save id="w1-damage" />
-          <input type="text" placeholder="Art" data-save id="w1-type" />
-          <input type="text" placeholder="Notiz" data-save id="w1-note" />
-        </div>
-        <div class="weapon-row">
-          <input type="text" data-save id="w2-name" />
-          <input type="text" data-save id="w2-bonus" />
-          <input type="text" data-save id="w2-damage" />
-          <input type="text" data-save id="w2-type" />
-          <input type="text" data-save id="w2-note" />
-        </div>
-        <div class="weapon-row">
-          <input type="text" data-save id="w3-name" />
-          <input type="text" data-save id="w3-bonus" />
-          <input type="text" data-save id="w3-damage" />
-          <input type="text" data-save id="w3-type" />
-          <input type="text" data-save id="w3-note" />
-        </div>
-        <div class="weapon-row">
-          <input type="text" data-save id="w4-name" />
-          <input type="text" data-save id="w4-bonus" />
-          <input type="text" data-save id="w4-damage" />
-          <input type="text" data-save id="w4-type" />
-          <input type="text" data-save id="w4-note" />
-        </div>
-        <div class="weapon-row">
-          <input type="text" data-save id="w5-name" />
-          <input type="text" data-save id="w5-bonus" />
-          <input type="text" data-save id="w5-damage" />
-          <input type="text" data-save id="w5-type" />
-          <input type="text" data-save id="w5-note" />
-        </div>
+<!-- Waffen: 5 einzeln positionier- und skalierbare Spalten -->
+      <div class="weapon-col wc-name">
+        <input type="text" placeholder="Name" data-save id="w1-name" />
+        <input type="text" placeholder="Name" data-save id="w2-name" />
+        <input type="text" placeholder="Name" data-save id="w3-name" />
+        <input type="text" placeholder="Name" data-save id="w4-name" />
+        <input type="text" placeholder="Name" data-save id="w5-name" />
+      </div>
+      <div class="weapon-col wc-bonus">
+        <input type="text" placeholder="+0 / 0" data-save id="w1-bonus" />
+        <input type="text" placeholder="+0 / 0" data-save id="w2-bonus" />
+        <input type="text" placeholder="+0 / 0" data-save id="w3-bonus" />
+        <input type="text" placeholder="+0 / 0" data-save id="w4-bonus" />
+        <input type="text" placeholder="+0 / 0" data-save id="w5-bonus" />
+      </div>
+      <div class="weapon-col wc-damage">
+        <input type="text" placeholder="1d6" data-save id="w1-damage" />
+        <input type="text" placeholder="1d6" data-save id="w2-damage" />
+        <input type="text" placeholder="1d6" data-save id="w3-damage" />
+        <input type="text" placeholder="1d6" data-save id="w4-damage" />
+        <input type="text" placeholder="1d6" data-save id="w5-damage" />
+      </div>
+      <div class="weapon-col wc-type">
+        <input type="text" placeholder="Art" data-save id="w1-type" />
+        <input type="text" placeholder="Art" data-save id="w2-type" />
+        <input type="text" placeholder="Art" data-save id="w3-type" />
+        <input type="text" placeholder="Art" data-save id="w4-type" />
+        <input type="text" placeholder="Art" data-save id="w5-type" />
+      </div>
+      <div class="weapon-col wc-note">
+        <input type="text" placeholder="Notiz" data-save id="w1-note" />
+        <input type="text" placeholder="Notiz" data-save id="w2-note" />
+        <input type="text" placeholder="Notiz" data-save id="w3-note" />
+        <input type="text" placeholder="Notiz" data-save id="w4-note" />
+        <input type="text" placeholder="Notiz" data-save id="w5-note" />
       </div>
 
       <!-- Klassenmerkmal und Fähigkeiten -->
@@ -168,6 +163,6 @@
     <div id="palette-list"></div>
   </aside>
 
-  <script src="js/app.js?v=12"></script>
+  <script src="js/app.js?v=13"></script>
 </body>
 </html>

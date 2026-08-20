@@ -36,6 +36,16 @@ html, body {
   font-size: 14px;
 }
 .toolbar button:hover, .toolbar .btn-like:hover { background: #5c5c5c; }
+.toolbar-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: #eee; font-size: 13px;
+  padding: 4px 8px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  background: #3a3a3a;
+  cursor: pointer;
+}
+.toolbar-toggle input { cursor: pointer; margin: 0; }
 .autosave-indicator {
   margin-left: auto;
   font-size: 12px;
@@ -114,9 +124,10 @@ html, body {
   background-image: none !important;
 }
 
-/* Erweiterte Klickfläche für kleine Kreise im K-Modus, damit sie
-   auch bei winziger Zielgröße greifbar bleiben. */
-.sheet.calibrate .draggable.circle::before {
+/* Erweiterte Klickfläche für kleine Kreise/Rauten/X im K-Modus */
+.sheet.calibrate .draggable.circle::before,
+.sheet.calibrate .draggable.diamond::before,
+.sheet.calibrate .draggable.xmark::before {
   content: "";
   position: absolute;
   inset: -8px;
@@ -146,19 +157,17 @@ html, body {
 }
 
 /* --- DEATH SAVES (6 Kreise, links Fehlschlag / rechts Erfolg) --- */
-.death-saves {
+/* Todes-X: 6 einzeln positionier- und skalierbare Kreuze */
+.ds-cell {
   position: absolute;
-  display: flex;
-  gap: 1.3%;
+  width: 1.8%;
 }
-.death-saves.failures  { left: 36.67%; top: 10.89%; width: 10.33%; height: 2.74%; }
-.death-saves.successes { left: 52.86%; top: 10.98%; width: 10.95%; height: 2.65%; }
-.death-saves label {
-  position: relative;
-  width: 1.8%; height: 100%;
-  min-width: 18px; min-height: 18px;
-  flex: 1;
-}
+.ds-f1 { left: 38%; top: 11.5%; }
+.ds-f2 { left: 41%; top: 11.5%; }
+.ds-f3 { left: 44%; top: 11.5%; }
+.ds-s1 { left: 55%; top: 11.5%; }
+.ds-s2 { left: 58%; top: 11.5%; }
+.ds-s3 { left: 61%; top: 11.5%; }
 
 /* --- LINKES BANNER: STR / DEX / CON --- */
 .field-str      { left: 7.90%;  top: 19.56%; width: 8%;   height: 2.8%; font-size: 22px; }
@@ -230,13 +239,13 @@ html, body {
 .field-prof-bonus       { left: 28.34%; top: 54.86%; width: 6%; height: 3.5%; font-size: 22px; }
 .field-hit-dice-current { left: 44.48%; top: 55.87%; width: 5%; height: 2.2%; font-size: 16px; }
 .field-hit-dice-max     { left: 50.91%; top: 56.03%; width: 5%; height: 2.2%; font-size: 16px; }
-.field-inspiration      { position: absolute; left: 66.00%; top: 54.80%; width: 4.63%; }
+.field-inspiration      { position: absolute; left: 68.01%; top: 55.57%; width: 1.98%; }
 
 /* --- Alleskönner (Jack of All Trades) --- */
 .jack-of-all {
   position: absolute;
-  left: 5.15%; top: 61.00%;
-  width: 2.24%;
+  left: 5.66%; top: 61.27%;
+  width: 1.23%;
 }
 
 /* --- Fertigkeiten-Liste (18 Reihen) --- */
@@ -273,32 +282,30 @@ html, body {
 .skill-row .skill-value { text-align: right; font-size: 15px; padding-right: 4px; }
 
 
-/* --- Waffen-Tabelle (5 Zeilen) --- */
-.weapons {
+/* --- Waffen: 5 einzelne Spalten, jede mit 5 gestapelten Zeilen --- */
+.weapon-col {
   position: absolute;
-  left: 40.52%; top: 64.96%;
-  width: 54.84%; height: 9.18%;
   display: flex;
   flex-direction: column;
-  gap: 0.4%;
+  gap: 2px;
 }
-.weapon-row {
-  display: grid;
-  grid-template-columns: 2.6fr 1.4fr 0.7fr 0.6fr 2.5fr;
-  gap: 4px;
-  height: 2.05%;
-  min-height: 22px;
-}
-.weapon-row input {
-  position: static;
-  height: 100%;
+.weapon-col input {
+  flex: 1;
   border: none;
-  border-bottom: none;
+  background: transparent;
+  font-family: inherit;
   font-size: 13px;
   text-align: left;
-  padding: 0 4px;
-  background: transparent;
+  padding: 2px 4px;
+  min-width: 0;
+  width: 100%;
 }
+/* Default-Positionen (können in K-Modus überschrieben werden) */
+.wc-name   { left: 40.5%; top: 65.0%; width: 13%; height: 9%; }
+.wc-bonus  { left: 54.0%; top: 65.0%; width: 9%;  height: 9%; }
+.wc-damage { left: 63.5%; top: 65.0%; width: 6%;  height: 9%; }
+.wc-type   { left: 70.0%; top: 65.0%; width: 6%;  height: 9%; }
+.wc-note   { left: 76.5%; top: 65.0%; width: 18%; height: 9%; }
 
 /* --- Klassenmerkmal und Fähigkeiten --- */
 .features {
@@ -316,12 +323,31 @@ html, body {
 }
 
 /* ============================================================
-   KREISE (1:1 Seitenverhältnis) – erzwungen, egal wie skaliert
+   Formen (1:1) – Kreis, Raute, Todes-X
    ============================================================ */
-.circle {
+.circle, .diamond, .xmark {
   aspect-ratio: 1 / 1 !important;
   height: auto !important;
-  border-radius: 50%;
+}
+.circle { border-radius: 50%; }
+
+/* Rauten: gefüllte Raute, wenn Checkbox aktiv */
+.input-layer .diamond input[type="checkbox"] {
+  border-radius: 0 !important;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* Todes-X: X-Symbol statt Punkt, wenn Checkbox aktiv */
+.input-layer .xmark input[type="checkbox"] {
+  border-radius: 0 !important;
+}
+.input-layer .xmark input[type="checkbox"]:checked {
+  background: transparent !important;
+  background-image:
+    linear-gradient( 45deg, transparent 46%, #000 46%, #000 54%, transparent 54%),
+    linear-gradient(-45deg, transparent 46%, #000 46%, #000 54%, transparent 54%) !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
 }
 
 /* ============================================================
