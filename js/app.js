@@ -353,7 +353,9 @@ const DRAGGABLES = [
   { sel: '.field-prof-bonus' }, { sel: '.field-hit-dice-current' },
   { sel: '.field-hit-dice-max' }, { sel: '.field-inspiration' },
   { sel: '.jack-of-all' },
-  { sel: '.skills', big: true },
+  // .skills wird bewusst NICHT in DRAGGABLES aufgenommen: der Container
+  // spannt sich über den gesamten Bogen (nur als Sicht-Toggle), und
+  // "draggable" würde ihn im K-Modus alles überdecken lassen.
   { sel: '.wc-name' },  { sel: '.wc-bonus' }, { sel: '.wc-damage' },
   { sel: '.wc-type' },  { sel: '.wc-note' },
   { sel: '.features', big: true },
@@ -630,14 +632,15 @@ const PALETTE_ITEMS = [
 
   // ==== Attribute STR/DEX/CON/INT/WIS/CHA ====
   ...(() => {
-    // Rettungswurf-Übungs-Marker: kalibriert an DEX (6.82% / 39.03% / 1.6%)
+    // Rettungswurf-Übungs-Marker: STR/DEX/CON linksbündig im linken Banner,
+    // INT/WIS/CHA linksbündig im rechten Banner (nicht gespiegelt).
     const SAVE_MARK_DEFAULTS = {
-      str: { l: '6.82%',  t: '25.91%' },
+      str: { l: '6.82%',  t: '27.00%' },
       dex: { l: '6.82%',  t: '39.03%' },
-      con: { l: '6.82%',  t: '51.90%' },
-      int: { l: '91.58%', t: '25.37%' },
-      wis: { l: '91.58%', t: '38.14%' },
-      cha: { l: '91.58%', t: '50.75%' },
+      con: { l: '6.82%',  t: '51.00%' },
+      int: { l: '84.00%', t: '26.50%' },
+      wis: { l: '84.00%', t: '38.50%' },
+      cha: { l: '84.00%', t: '50.50%' },
     };
     return ['str','dex','con','int','wis','cha'].flatMap(a => {
       const A = a.toUpperCase();
