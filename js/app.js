@@ -646,7 +646,7 @@ const PALETTE_ITEMS = [
         { sel: `.field-${a}`,      id: `${a}-score`,     label: `${A} Wert`,             type: 'existing', group: A },
         { sel: `.mod-${a}`,        id: `${a}-mod`,       label: `${A} Modifikator`,      type: 'existing', group: A },
         { sel: `.save-${a}-check`, id: `${a}-save-check`,label: `${A} Rettungswurf-Übung (Kreis)`, type: 'existing', group: A,
-          defaultLeft: sc.l, defaultTop: sc.t, w: 1.4 },
+          defaultLeft: sc.l, defaultTop: sc.t, w: 1.62 },
         { sel: `.save-${a}`,       id: `${a}-save`,      label: `${A} Rettungswurf`,     type: 'existing', group: A },
       ];
     });
@@ -808,19 +808,32 @@ function togglePaletteItem(item, on) {
   saveLayoutToLocalStorage();
 }
 
-// Formen (circle/diamond/xmark) dürfen nie versehentlich riesig sein.
-// Wenn eine Form breiter als 10% des Bogens ist, wird sie auf ihre
-// Default-Breite zurückgesetzt (oder 2% wenn kein Default definiert ist).
+// Formen (circle/diamond/xmark) bei EXPLIZITER Aktivierung via Palette-
+// Checkbox: immer Default-Breite. So bekommt der User eine vorhersagbare
+// Ausgangsgröße (Skill-Prototyp-Maß 1.62%).
 function normalizeShapeSize(el, item) {
+  const isShape = el.classList.contains('circle')
+               || el.classList.contains('diamond')
+               || el.classList.contains('xmark');
+  if (!isShape) return;
+  const w = (item && item.w) ? item.w : 1.62;
+  el.style.width  = w + '%';
+  el.style.height = '';
+}
+
+// Heilung beim Seitenneuladen: nur zurücksetzen, wenn eine Form so kaputt
+// ist, dass sie den Bogen überdecken würde. Ansonsten vom User gezogene
+// Größen NICHT antasten.
+function healBrokenShapeSize(el, item) {
   const isShape = el.classList.contains('circle')
                || el.classList.contains('diamond')
                || el.classList.contains('xmark');
   if (!isShape) return;
   const sheetRect = document.getElementById('sheet').getBoundingClientRect();
   const r = el.getBoundingClientRect();
-  const tooBig = r.width > sheetRect.width * 0.1 || r.height > sheetRect.height * 0.1;
-  if (tooBig) {
-    el.style.width = (item && item.w ? item.w : 1.5) + '%';
+  const broken = r.width > sheetRect.width * 0.15 || r.width < 2;
+  if (broken) {
+    el.style.width  = ((item && item.w) || 1.62) + '%';
     el.style.height = '';
   }
 }
@@ -891,9 +904,9 @@ function restorePaletteState() {
       const el = resolveItemElement(item);
       if (el && on) {
         el.classList.add('pal-active');
-        // Nach dem Anzeigen prüfen: Größe und Position sanieren
+        // Nach dem Anzeigen prüfen: nur wirklich kaputte Größen heilen
         requestAnimationFrame(() => {
-          normalizeShapeSize(el, item);
+          healBrokenShapeSize(el, item);
           ensureVisible(el);
         });
       }

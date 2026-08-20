@@ -184,28 +184,28 @@ html, body {
 /* --- LINKES BANNER: STR / DEX / CON --- */
 .field-str      { left: 7.90%;  top: 19.56%; width: 8%;   height: 2.8%; font-size: 22px; }
 .mod-str        { left: 6.64%;  top: 22.27%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
-.save-str-check { left: 8.05%;  top: 25.76%; width: 1.4%; height: 1.4%; }
+.save-str-check { left: 8.05%;  top: 25.76%; width: 1.62%; height: 1.62%; }
 .save-str       { left: 10.15%; top: 25.46%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
 .field-dex      { left: 7.90%;  top: 32.68%; width: 8%;   height: 2.8%; font-size: 22px; }
 .mod-dex        { left: 6.89%;  top: 35.57%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
-.save-dex-check { left: 8.42%;  top: 38.52%; width: 1.4%; height: 1.4%; }
+.save-dex-check { left: 8.42%;  top: 38.52%; width: 1.62%; height: 1.62%; }
 .save-dex       { left: 10.52%; top: 38.22%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
 .field-con      { left: 8.28%;  top: 45.55%; width: 8%;   height: 2.8%; font-size: 22px; }
 .mod-con        { left: 7.39%;  top: 48.26%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
-.save-con-check { left: 8.42%;  top: 51.31%; width: 1.4%; height: 1.4%; }
+.save-con-check { left: 8.42%;  top: 51.31%; width: 1.62%; height: 1.62%; }
 .save-con       { left: 10.52%; top: 51.01%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
 /* --- RECHTES BANNER: INT / WIS / CHA --- */
 .field-int      { left: 85.24%; top: 19.02%; width: 8%;   height: 2.8%; font-size: 22px; }
 .mod-int        { left: 84.48%; top: 21.82%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
-.save-int-check { left: 85.51%; top: 25.04%; width: 1.4%; height: 1.4%; }
+.save-int-check { left: 85.51%; top: 25.04%; width: 1.62%; height: 1.62%; }
 .save-int       { left: 87.61%; top: 24.74%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
 .field-wis      { left: 85.11%; top: 31.79%; width: 8%;   height: 2.8%; font-size: 22px; }
 .mod-wis        { left: 85.36%; top: 34.68%; width: 8%;   height: 2.0%; font-size: 15px; color:#555; }
-.save-wis-check { left: 85.51%; top: 37.90%; width: 1.4%; height: 1.4%; }
+.save-wis-check { left: 85.51%; top: 37.90%; width: 1.62%; height: 1.62%; }
 .save-wis       { left: 87.61%; top: 37.60%; width: 5.5%; height: 2.0%; font-size: 15px; text-align:left; padding-left: 4px; }
 
 .field-cha      { left: 85.11%; top: 44.40%; width: 8%;    height: 2.8%; font-size: 22px; }
