@@ -373,6 +373,19 @@ function setupCalibrationDrag() {
     if (big) el.classList.add('big');
     el.dataset.selector = sel;
 
+    // Mausrad im K-Modus: Element drehen (Shift = 5°-Schritte).
+    el.addEventListener('wheel', (e) => {
+      if (!sheet.classList.contains('calibrate')) return;
+      e.preventDefault();
+      const step = e.shiftKey ? 5 : 1;
+      const delta = (e.deltaY > 0 ? step : -step);
+      const cur = parseFloat(el.dataset.rotation || '0');
+      const next = cur + delta;
+      el.dataset.rotation = next;
+      el.style.transform = `rotate(${next}deg)`;
+      saveLayoutToLocalStorage();
+    }, { passive: false });
+
     el.addEventListener('mousedown', (e) => {
       if (!sheet.classList.contains('calibrate')) return;
       e.preventDefault();
@@ -547,6 +560,7 @@ function collectLayout() {
       top: el.style.top || null,
       width: el.style.width || null,
       height: el.style.height || null,
+      rotation: el.dataset.rotation ? parseFloat(el.dataset.rotation) : null,
     };
   });
   return layout;
@@ -560,6 +574,11 @@ function applyLayout(layout) {
     ['left','top','width','height'].forEach((prop) => {
       if (css[prop]) el.style[prop] = css[prop];
     });
+    if (css.rotation != null && !Number.isNaN(parseFloat(css.rotation))) {
+      const r = parseFloat(css.rotation);
+      el.dataset.rotation = r;
+      el.style.transform = `rotate(${r}deg)`;
+    }
   });
 }
 
