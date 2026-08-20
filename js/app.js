@@ -635,12 +635,12 @@ const PALETTE_ITEMS = [
     // Rettungswurf-Übungs-Marker: STR/DEX/CON linksbündig im linken Banner,
     // INT/WIS/CHA linksbündig im rechten Banner (nicht gespiegelt).
     const SAVE_MARK_DEFAULTS = {
-      str: { l: '6.82%',  t: '27.00%' },
+      str: { l: '6.82%',  t: '26.14%' },
       dex: { l: '6.82%',  t: '39.03%' },
-      con: { l: '6.82%',  t: '51.00%' },
-      int: { l: '84.00%', t: '26.50%' },
-      wis: { l: '84.00%', t: '38.50%' },
-      cha: { l: '84.00%', t: '50.50%' },
+      con: { l: '6.82%',  t: '51.72%' },
+      int: { l: '83.62%', t: '25.48%' },
+      wis: { l: '83.62%', t: '38.37%' },
+      cha: { l: '83.62%', t: '51.06%' },
     };
     return ['str','dex','con','int','wis','cha'].flatMap(a => {
       const A = a.toUpperCase();
@@ -675,12 +675,13 @@ const PALETTE_ITEMS = [
   { sel: '.ds-s1', id: 'ds-s1-cell', label: 'Todesrettung Erfolg 1 (X)', type: 'existing', group: 'Werte' },
   { sel: '.ds-s2', id: 'ds-s2-cell', label: 'Todesrettung Erfolg 2 (X)', type: 'existing', group: 'Werte' },
   { sel: '.ds-s3', id: 'ds-s3-cell', label: 'Todesrettung Erfolg 3 (X)', type: 'existing', group: 'Werte' },
-  { id: 'pal-shield', label: 'Schild (Raute, +2 auf AC)', type: 'diamond', group: 'Werte', w: 1.62, defaultLeft: '49.01%', defaultTop: '50.44%' },
+  { id: 'pal-shield', label: 'Schild (Raute, +2 auf AC)', type: 'diamond', group: 'Werte', w: 1.29, defaultLeft: '49.33%', defaultTop: '50.66%' },
 
   // ==== Skill-Prototypen (Kalibrierung; werden später auf 18 Skills geklont) ====
-  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle', group: 'Skill-Prototyp (nur Kalibrierung)', w: 1.62, defaultLeft: '4.85%',  defaultTop: '69.05%' },
-  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle', group: 'Skill-Prototyp (nur Kalibrierung)', w: 1.62, defaultLeft: '6.08%',  defaultTop: '69.05%' },
-  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',  group: 'Skill-Prototyp (nur Kalibrierung)', w: 4.63, h: 1.82, defaultLeft: '30.03%', defaultTop: '68.62%' },
+  // Y um 3 Zeilen (3 * 1.94% = 5.82%) nach oben geschoben
+  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle', group: 'Skill-Prototyp (nur Kalibrierung)', w: 1.62, defaultLeft: '4.85%',  defaultTop: '63.23%' },
+  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle', group: 'Skill-Prototyp (nur Kalibrierung)', w: 1.62, defaultLeft: '6.08%',  defaultTop: '63.23%' },
+  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',  group: 'Skill-Prototyp (nur Kalibrierung)', w: 4.63, h: 1.82, defaultLeft: '30.03%', defaultTop: '62.80%' },
 
   // ==== Zauber ====
   { id: 'pal-spell-attr',  label: 'Zauber-Attribut',      type: 'text',   group: 'Zauber', w: 8, h: 2.5 },

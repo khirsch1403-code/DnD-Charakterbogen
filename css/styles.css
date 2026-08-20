@@ -172,14 +172,14 @@ html, body {
 /* Todes-X: 6 einzeln positionier- und skalierbare Kreuze */
 .ds-cell {
   position: absolute;
-  width: 1.8%;
+  width: 2.5%;
 }
-.ds-f1 { left: 38%; top: 11.5%; }
-.ds-f2 { left: 41%; top: 11.5%; }
-.ds-f3 { left: 44%; top: 11.5%; }
-.ds-s1 { left: 55%; top: 11.5%; }
-.ds-s2 { left: 58%; top: 11.5%; }
-.ds-s3 { left: 61%; top: 11.5%; }
+.ds-f1 { left: 44.05%; top: 11.32%; }
+.ds-f2 { left: 40.62%; top: 11.32%; }
+.ds-f3 { left: 36.63%; top: 11.32%; }
+.ds-s1 { left: 53.41%; top: 11.32%; }
+.ds-s2 { left: 56.87%; top: 11.32%; }
+.ds-s3 { left: 60.88%; top: 11.33%; }
 
 /* --- LINKES BANNER: STR / DEX / CON --- */
 .field-str      { left: 7.90%;  top: 19.56%; width: 8%;   height: 2.8%; font-size: 22px; }
@@ -215,12 +215,12 @@ html, body {
   position: absolute;
   width: 1.6%;
 }
-.save-str-mark { left: 6.82%; top: 27.00%; }
-.save-dex-mark { left: 6.82%; top: 39.03%; }
-.save-con-mark { left: 6.82%; top: 51.00%; }
-.save-int-mark { left: 84.00%; top: 26.50%; }
-.save-wis-mark { left: 84.00%; top: 38.50%; }
-.save-cha-mark { left: 84.00%; top: 50.50%; }
+.save-str-mark { left: 6.82%;  top: 26.14%; }
+.save-dex-mark { left: 6.82%;  top: 39.03%; }
+.save-con-mark { left: 6.82%;  top: 51.72%; }
+.save-int-mark { left: 83.62%; top: 25.48%; }
+.save-wis-mark { left: 83.62%; top: 38.37%; }
+.save-cha-mark { left: 83.62%; top: 51.06%; }
 
 /* --- ZENTRALES PORTRAIT --- */
 .portrait-drop {
@@ -260,13 +260,13 @@ html, body {
 .field-prof-bonus       { left: 28.34%; top: 54.86%; width: 6%; height: 3.5%; font-size: 22px; }
 .field-hit-dice-current { left: 44.48%; top: 55.87%; width: 5%; height: 2.2%; font-size: 16px; }
 .field-hit-dice-max     { left: 50.91%; top: 56.03%; width: 5%; height: 2.2%; font-size: 16px; }
-.field-inspiration      { position: absolute; left: 68.01%; top: 55.57%; width: 1.98%; }
+.field-inspiration      { position: absolute; left: 67.12%; top: 55.31%; width: 2.88%; }
 
 /* --- Alleskönner (Jack of All Trades) --- */
 .jack-of-all {
   position: absolute;
-  left: 5.66%; top: 61.27%;
-  width: 1.23%;
+  left: 5.53%; top: 61.18%;
+  width: 1.5%;
 }
 
 /* --- Fertigkeiten: 18 absolute-positionierte Skill-Zellen --- */
