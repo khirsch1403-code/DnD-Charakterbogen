@@ -248,38 +248,31 @@ html, body {
   width: 1.23%;
 }
 
-/* --- Fertigkeiten-Liste (18 Reihen) --- */
+/* --- Fertigkeiten: 18 absolute-positionierte Skill-Zellen --- */
 .skills {
   position: absolute;
-  left: 3.25%;  top: 62.92%;
-  width: 32.5%; height: 34.96%;
-  display: grid;
-  grid-template-rows: repeat(18, 1fr);
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; /* Container klickfrei; nur Zellen greifen */
 }
-.skill-row {
-  display: grid;
-  grid-template-columns: 16px 16px 1fr;
-  align-items: center;
-  gap: 3px;
-  padding: 0 4px;
+.skills > * { pointer-events: auto; }
+
+.skill-cell { position: absolute; }
+.skill-cell.skill-value {
+  text-align: right;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--ink);
 }
-.skill-row input[type="checkbox"] {
-  position: static;
-  transform: none;
-  top: auto; left: auto;
-  width: 10px; height: 10px;
-  margin: 0 auto;
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  border: none;
-  border-radius: 50%;
+.skill-cell.skill-hit {
+  /* unsichtbare Klickfläche über beide Kreise, damit man leicht cyclen kann */
   cursor: pointer;
+  background: transparent;
 }
-.skill-row input[type="checkbox"]:checked {
-  background: #000;
+.sheet.calibrate .skill-cell.skill-hit {
+  background: rgba(90, 200, 100, 0.08);
+  outline: 1px dashed rgba(30, 140, 60, 0.6);
 }
-.skill-row .skill-value { text-align: right; font-size: 15px; padding-right: 4px; }
 
 
 /* --- Waffen: 5 einzelne Spalten, jede mit 5 gestapelten Zeilen --- */

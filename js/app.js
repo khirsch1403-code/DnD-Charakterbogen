@@ -34,18 +34,102 @@ const proficiencyBonus = (level) => {
 };
 
 // ---- Skills UI ----
+// Merged Skills: jede Fertigkeit hat 2 Kreise (Übung, Expertise) und 1 Wert.
+// Ein Klick auf einen Kreis zykliert den gemeinsamen Zustand:
+//   0 = leer, 1 = Übung, 2 = Übung + Expertise, dann zurück auf 0.
+// Positionen leiten sich vom Skill-Prototyp (Palette) und einer Zeilen-
+// Schrittgröße ab; die Reihen sind gleichmäßig auf den Skill-Bereich verteilt.
+const SKILL_ROW_STEP = 1.62; // % pro Zeile (18 Skills = ~29% vertikal)
+const skillStates = {};      // { skill-id: 0|1|2 }
+
 function buildSkillsUI() {
   const container = $('skills');
-  SKILLS.forEach((s) => {
-    const row = document.createElement('div');
-    row.className = 'skill-row';
-    row.innerHTML = `
-      <input type="checkbox" id="skill-${s.id}-prof" data-save title="Übung" />
-      <input type="checkbox" id="skill-${s.id}-exp"  data-save title="Expertise" />
-      <span class="skill-value" id="skill-${s.id}-value">+0</span>
-    `;
-    container.appendChild(row);
+  container.innerHTML = '';
+
+  const proto = {
+    u:  PALETTE_ITEMS.find(i => i.id === 'pal-skill-uebung'),
+    e:  PALETTE_ITEMS.find(i => i.id === 'pal-skill-expertise'),
+    v:  PALETTE_ITEMS.find(i => i.id === 'pal-skill-value'),
+  };
+  const uL = parseFloat(proto.u.defaultLeft);
+  const uT = parseFloat(proto.u.defaultTop);
+  const eL = parseFloat(proto.e.defaultLeft);
+  const eT = parseFloat(proto.e.defaultTop);
+  const vL = parseFloat(proto.v.defaultLeft);
+  const vT = parseFloat(proto.v.defaultTop);
+  const uW = proto.u.w;
+  const eW = proto.e.w;
+  const vW = proto.v.w;
+  const vH = proto.v.h;
+
+  SKILLS.forEach((s, idx) => {
+    const yOff = idx * SKILL_ROW_STEP;
+
+    // Übung-Kreis (rendert schwarz gefüllt bei state >= 1)
+    const prof = document.createElement('label');
+    prof.className = 'skill-cell circle skill-prof';
+    prof.id = `skill-${s.id}-prof-cell`;
+    prof.style.left = uL + '%';
+    prof.style.top  = (uT + yOff) + '%';
+    prof.style.width = uW + '%';
+    prof.innerHTML = `<input type="checkbox" tabindex="-1" />`;
+    container.appendChild(prof);
+
+    // Expertise-Kreis
+    const exp = document.createElement('label');
+    exp.className = 'skill-cell circle skill-exp';
+    exp.id = `skill-${s.id}-exp-cell`;
+    exp.style.left = eL + '%';
+    exp.style.top  = (eT + yOff) + '%';
+    exp.style.width = eW + '%';
+    exp.innerHTML = `<input type="checkbox" tabindex="-1" />`;
+    container.appendChild(exp);
+
+    // Unsichtbare Klickfläche über beide Kreise (bequem zu treffen)
+    const hit = document.createElement('div');
+    hit.className = 'skill-cell skill-hit';
+    hit.dataset.skillId = s.id;
+    const hitLeft = Math.min(uL, eL);
+    const hitRight = Math.max(uL + uW, eL + eW);
+    hit.style.left = hitLeft + '%';
+    hit.style.top  = (Math.min(uT, eT) + yOff) + '%';
+    hit.style.width = (hitRight - hitLeft) + '%';
+    hit.style.height = Math.max(uW, eW) + '%';
+    hit.addEventListener('click', () => {
+      if (document.getElementById('sheet').classList.contains('calibrate')) return;
+      cycleSkill(s.id);
+    });
+    container.appendChild(hit);
+
+    // Wert-Anzeige (+0)
+    const val = document.createElement('div');
+    val.className = 'skill-cell skill-value';
+    val.id = `skill-${s.id}-value`;
+    val.style.left = vL + '%';
+    val.style.top  = (vT + yOff) + '%';
+    val.style.width = vW + '%';
+    val.style.height = vH + '%';
+    val.textContent = '+0';
+    container.appendChild(val);
+
+    if (!(s.id in skillStates)) skillStates[s.id] = 0;
+    updateSkillVisual(s.id);
   });
+}
+
+function cycleSkill(id) {
+  skillStates[id] = (skillStates[id] + 1) % 3;
+  updateSkillVisual(id);
+  recalcAll();
+  saveToLocalStorage();
+}
+
+function updateSkillVisual(id) {
+  const state = skillStates[id] || 0;
+  const profCB = document.querySelector(`#skill-${id}-prof-cell input`);
+  const expCB  = document.querySelector(`#skill-${id}-exp-cell input`);
+  if (profCB) profCB.checked = state >= 1;
+  if (expCB)  expCB.checked  = state >= 2;
 }
 
 // ---- Berechnungen ----
@@ -72,19 +156,24 @@ function recalcAll() {
   $('initiative').textContent = fmt(mods.dex);
 
   // Passive Wahrnehmung (10 + WIS mod + PB wenn geübt in Wahrnehmung)
-  const perceptionProf = $('skill-wahrnehmung-prof').checked;
-  let passive = 10 + mods.wis + (perceptionProf ? pb : (jack ? jackBonus : 0));
-  $('passive-perception').textContent = passive;
+  const perceptionState = skillStates['wahrnehmung'] || 0;
+  const perceptionProf = perceptionState >= 1;
+  const perceptionExp  = perceptionState >= 2;
+  let passiveBonus = 0;
+  if (perceptionExp) passiveBonus = pb * 2;
+  else if (perceptionProf) passiveBonus = pb;
+  else if (jack) passiveBonus = jackBonus;
+  $('passive-perception').textContent = 10 + mods.wis + passiveBonus;
 
-  // Skills (Übung + Expertise; Expertise setzt Übung voraus im 5e-2024-Regelwerk)
+  // Skills nach dem Cycle-Zustand (0/1/2)
   SKILLS.forEach((s) => {
-    const prof = $(`skill-${s.id}-prof`).checked;
-    const exp  = $(`skill-${s.id}-exp`).checked;
+    const state = skillStates[s.id] || 0;
     let val = mods[s.attr];
-    if (exp) val += pb * 2;
-    else if (prof) val += pb;
+    if (state === 2) val += pb * 2;
+    else if (state === 1) val += pb;
     else if (jack) val += jackBonus;
-    $(`skill-${s.id}-value`).textContent = fmt(val);
+    const el = document.getElementById(`skill-${s.id}-value`);
+    if (el) el.textContent = fmt(val);
   });
 }
 
@@ -98,6 +187,8 @@ function collectState() {
   // Portrait
   const img = $('portrait-img');
   if (img.src && img.src.startsWith('data:')) state.__portrait = img.src;
+  // Skill-Cycling-Zustände
+  state.__skillStates = { ...skillStates };
   return state;
 }
 
@@ -112,6 +203,10 @@ function applyState(state) {
     const img = $('portrait-img');
     img.src = state.__portrait;
     $('portrait-drop').classList.add('has-image');
+  }
+  if (state.__skillStates) {
+    Object.assign(skillStates, state.__skillStates);
+    SKILLS.forEach((s) => updateSkillVisual(s.id));
   }
   recalcAll();
 }
@@ -605,7 +700,7 @@ const PALETTE_ITEMS = [
 
   // ==== Klassenmerkmale / Skills-Container ====
   { sel: '.features', id: 'features-block', label: 'Klassenmerkmale (Textblock)', type: 'existing', group: 'Blöcke' },
-  { sel: '.skills',   id: 'skills-block',   label: 'Skills-Container (Block)',    type: 'existing', group: 'Blöcke' },
+  { sel: '.skills',   id: 'skills-block',   label: 'Skills (alle 18 Fertigkeiten)', type: 'existing', group: 'Blöcke' },
 
   // ==== Münzen ====
   { id: 'pal-cp', label: 'Kupfer (K)',   type: 'number', group: 'Münzen', w: 6, h: 2.5 },
