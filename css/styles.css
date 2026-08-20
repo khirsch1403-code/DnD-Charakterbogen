@@ -124,7 +124,9 @@ html, body {
   background-image: none !important;
 }
 
-/* Erweiterte Klickfläche für kleine Kreise/Rauten/X im K-Modus */
+/* Erweiterte Klickfläche für kleine Kreise/Rauten/X im K-Modus.
+   Kein Hintergrundfüller mehr – so kann kein riesiges rosa Feld
+   entstehen, falls ein Element versehentlich zu breit gespeichert ist. */
 .sheet.calibrate .draggable.circle::before,
 .sheet.calibrate .draggable.diamond::before,
 .sheet.calibrate .draggable.xmark::before {
@@ -132,8 +134,18 @@ html, body {
   position: absolute;
   inset: -8px;
   border-radius: 50%;
-  background: rgba(220, 30, 30, 0.10);
+  background: transparent;
   cursor: move;
+}
+
+/* Zusätzlich: kleiner roter Umriss um die eigentliche Form,
+   damit auch winzige Elemente sichtbar bleiben. */
+.sheet.calibrate .draggable.circle,
+.sheet.calibrate .draggable.diamond,
+.sheet.calibrate .draggable.xmark {
+  outline: 1px dashed rgba(220, 30, 30, 0.85) !important;
+  outline-offset: 1px;
+  background: transparent !important;
 }
 /* Große Klickfläche über das ganze Label */
 .input-layer label:has(> input[type="checkbox"]) {

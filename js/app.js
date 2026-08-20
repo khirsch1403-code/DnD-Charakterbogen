@@ -800,9 +800,29 @@ function togglePaletteItem(item, on) {
   const el = resolveItemElement(item);
   if (!el) return;
   el.classList.toggle('pal-active', on);
-  if (on) ensureVisible(el);
+  if (on) {
+    normalizeShapeSize(el, item);
+    ensureVisible(el);
+  }
   savePaletteState();
   saveLayoutToLocalStorage();
+}
+
+// Formen (circle/diamond/xmark) dürfen nie versehentlich riesig sein.
+// Wenn eine Form breiter als 10% des Bogens ist, wird sie auf ihre
+// Default-Breite zurückgesetzt (oder 2% wenn kein Default definiert ist).
+function normalizeShapeSize(el, item) {
+  const isShape = el.classList.contains('circle')
+               || el.classList.contains('diamond')
+               || el.classList.contains('xmark');
+  if (!isShape) return;
+  const sheetRect = document.getElementById('sheet').getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  const tooBig = r.width > sheetRect.width * 0.1 || r.height > sheetRect.height * 0.1;
+  if (tooBig) {
+    el.style.width = (item && item.w ? item.w : 1.5) + '%';
+    el.style.height = '';
+  }
 }
 
 // Recall: Feld an sichtbare Startposition (Default oder mittig) holen,
@@ -871,8 +891,11 @@ function restorePaletteState() {
       const el = resolveItemElement(item);
       if (el && on) {
         el.classList.add('pal-active');
-        // Nach dem Anzeigen prüfen ob innerhalb des Bogens — sonst zurückholen
-        requestAnimationFrame(() => ensureVisible(el));
+        // Nach dem Anzeigen prüfen: Größe und Position sanieren
+        requestAnimationFrame(() => {
+          normalizeShapeSize(el, item);
+          ensureVisible(el);
+        });
       }
       const cb = document.querySelector(`[data-pal-target="${item.id}"]`);
       if (cb) cb.checked = on;
