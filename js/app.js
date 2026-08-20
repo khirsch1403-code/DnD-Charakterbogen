@@ -306,7 +306,8 @@ function setupCalibrationDrag() {
           el.style.top  = newTop.toFixed(2)  + '%';
           showSnapGuides(guides, snap);
         } else if (isCircle) {
-          const newW = Math.max(0.3, startWPct + dxPct);
+          // Kreise: min 0.8% Breite (~1.7mm) damit sie greifbar bleiben
+          const newW = Math.max(0.8, startWPct + dxPct);
           el.style.width  = newW.toFixed(2) + '%';
           el.style.height = '';
         } else {
@@ -509,8 +510,8 @@ const PALETTE_ITEMS = [
   { id: 'char-name',   label: 'Charaktername',    type: 'existing', group: 'Kopf' },
   { id: 'char-level',  label: 'Charakterlevel',   type: 'existing', group: 'Kopf' },
   { sel: '.portrait-drop', id: 'portrait-drop', label: 'Portrait',    type: 'existing', group: 'Kopf' },
-  { id: 'pal-class',       label: 'Klasse',               type: 'text',   group: 'Kopf', w: 18, h: 2.5 },
-  { id: 'pal-subclass',    label: 'Unterklasse',          type: 'text',   group: 'Kopf', w: 18, h: 2.5 },
+  { id: 'pal-class',       label: 'Klasse',               type: 'text',   group: 'Kopf', w: 18, h: 2.5, defaultLeft: '21.3%',  defaultTop: '4.48%' },
+  { id: 'pal-subclass',    label: 'Unterklasse',          type: 'text',   group: 'Kopf', w: 18, h: 2.5, defaultLeft: '61.09%', defaultTop: '4.58%' },
   { id: 'pal-species',     label: 'Spezies',              type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
   { id: 'pal-background',  label: 'Hintergrund',          type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
   { id: 'pal-alignment',   label: 'Ausrichtung',          type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
@@ -544,11 +545,12 @@ const PALETTE_ITEMS = [
   { sel: '.jack-of-all',            id: 'jack-of-all',      label: 'Alleskönner (Kreis)',   type: 'existing', group: 'Werte' },
   { sel: '.death-saves.failures',   id: 'ds-fails',         label: 'Todesrettung Fehler (3 Kreise)',  type: 'existing', group: 'Werte' },
   { sel: '.death-saves.successes',  id: 'ds-successes',     label: 'Todesrettung Erfolge (3 Kreise)', type: 'existing', group: 'Werte' },
+  { id: 'pal-shield', label: 'Schild (Kreis, +2 auf AC)', type: 'circle', group: 'Werte', w: 2, defaultLeft: '49%', defaultTop: '49%' },
 
   // ==== Skill-Prototypen (Kalibrierung; werden später auf 18 Skills geklont) ====
-  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle',   group: 'Skill-Prototyp', w: 1.4 },
-  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle',   group: 'Skill-Prototyp', w: 1.4 },
-  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',     group: 'Skill-Prototyp', w: 4, h: 2 },
+  { id: 'pal-skill-uebung',    label: 'Skill-Übung (Kreis)',     type: 'circle',   group: 'Skill-Prototyp', w: 3.12, defaultLeft: '4.07%',  defaultTop: '68.35%' },
+  { id: 'pal-skill-expertise', label: 'Skill-Expertise (Kreis)', type: 'circle',   group: 'Skill-Prototyp', w: 2.03, defaultLeft: '5.63%',  defaultTop: '68.74%' },
+  { id: 'pal-skill-value',     label: 'Skill-Wert (+0)',          type: 'text',     group: 'Skill-Prototyp', w: 4, h: 2, defaultLeft: '30.03%', defaultTop: '68.56%' },
 
   // ==== Zauber ====
   { id: 'pal-spell-attr',  label: 'Zauber-Attribut',      type: 'text',   group: 'Zauber', w: 8, h: 2.5 },
@@ -651,8 +653,8 @@ function createPaletteField(item) {
   el.classList.add('palette-created');
   if (item.type === 'circle') el.classList.add('circle');
   if (item.type !== 'circle') el.setAttribute('data-save', '');
-  el.style.left = '2%';
-  el.style.top = '2%';
+  el.style.left = item.defaultLeft || '2%';
+  el.style.top  = item.defaultTop  || '2%';
   el.style.width = item.w + '%';
   if (item.type !== 'circle' && item.h) el.style.height = item.h + '%';
   return el;
@@ -667,12 +669,24 @@ function togglePaletteItem(item, on) {
   saveLayoutToLocalStorage();
 }
 
-// Recall: Feld an sichtbare Startposition (2%/2%) holen und aktivieren
+// Recall: Feld an sichtbare Startposition (Default oder mittig) holen,
+// Größe auf sinnvollen Wert zurücksetzen und aktivieren.
 function recallPaletteItem(item) {
   const el = resolveItemElement(item);
   if (!el) return;
-  el.style.left = '2%';
-  el.style.top  = '2%';
+  el.style.left = item.defaultLeft || '45%';
+  el.style.top  = item.defaultTop  || '45%';
+  // Größe zurücksetzen (nur wenn item.w bekannt, sonst CSS-Default)
+  if (item.w) el.style.width = item.w + '%';
+  else el.style.width = '';
+  if (el.classList.contains('circle')) {
+    el.style.height = '';               // Kreise: Höhe aus aspect-ratio
+    if (!item.w) el.style.width = '2%';  // Mindestgröße für Sichtbarkeit
+  } else if (item.h) {
+    el.style.height = item.h + '%';
+  } else {
+    el.style.height = '';
+  }
   el.classList.add('pal-active');
   const cb = document.querySelector(`[data-pal-target="${item.id}"]`);
   if (cb) cb.checked = true;
