@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>D&D Charakterbogen</title>
-  <link rel="stylesheet" href="css/styles.css?v=21" />
+  <link rel="stylesheet" href="css/styles.css?v=22" />
 </head>
 <body>
   <div class="toolbar no-print">
@@ -163,6 +163,27 @@
     <div id="palette-list"></div>
   </aside>
 
-  <script src="js/app.js?v=21"></script>
+  <!-- Portrait-Zuschneide-Modal -->
+  <div class="modal-overlay no-print" id="portrait-modal">
+    <div class="cropper-panel">
+      <h3>Charakterbild zuschneiden</h3>
+      <p class="cropper-hint">Zieh den weißen Rahmen über den gewünschten Ausschnitt · Ecken zum Skalieren · Mitte zum Verschieben. Das Seitenverhältnis wird passend zum Rahmen des Bogens gehalten.</p>
+      <div class="cropper-workspace" id="cropper-workspace">
+        <img id="cropper-source" alt="" />
+        <div class="crop-frame" id="crop-frame">
+          <div class="crop-handle nw"></div>
+          <div class="crop-handle ne"></div>
+          <div class="crop-handle sw"></div>
+          <div class="crop-handle se"></div>
+        </div>
+      </div>
+      <div class="cropper-actions">
+        <button id="crop-cancel">Abbrechen</button>
+        <button id="crop-apply">Übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js?v=22"></script>
 </body>
 </html>

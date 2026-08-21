@@ -229,24 +229,15 @@ function loadFromLocalStorage() {
   }
 }
 
-// ---- Portrait Upload ----
+// ---- Portrait Upload + Cropper ----
+// Aspect-Ratio des Portrait-Slots (CSS-Default 43.17% × 30.81%)
+const PORTRAIT_AR = 43.17 / 30.81;
+
 function setupPortrait() {
   const drop = $('portrait-drop');
   const input = $('portrait-input');
-  const img = $('portrait-img');
 
-  const readFile = (file) => {
-    if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      img.src = e.target.result;
-      drop.classList.add('has-image');
-      saveToLocalStorage();
-    };
-    reader.readAsDataURL(file);
-  };
-
-  input.addEventListener('change', (e) => readFile(e.target.files[0]));
+  input.addEventListener('change', (e) => openCropperWithFile(e.target.files[0]));
 
   drop.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -256,8 +247,143 @@ function setupPortrait() {
   drop.addEventListener('drop', (e) => {
     e.preventDefault();
     drop.classList.remove('drag-over');
-    readFile(e.dataTransfer.files[0]);
+    openCropperWithFile(e.dataTransfer.files[0]);
   });
+
+  document.getElementById('crop-apply').addEventListener('click', applyCrop);
+  document.getElementById('crop-cancel').addEventListener('click', closeCropper);
+  setupCropperInteractions();
+}
+
+function openCropperWithFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const src = document.getElementById('cropper-source');
+    src.onload = () => {
+      const frame = document.getElementById('crop-frame');
+      const imgW = src.clientWidth;
+      const imgH = src.clientHeight;
+      // Größten Ausschnitt mit passendem Verhältnis wählen
+      let cw, ch;
+      if (imgW / imgH > PORTRAIT_AR) {
+        ch = imgH * 0.9;
+        cw = ch * PORTRAIT_AR;
+      } else {
+        cw = imgW * 0.9;
+        ch = cw / PORTRAIT_AR;
+      }
+      frame.style.width  = cw + 'px';
+      frame.style.height = ch + 'px';
+      frame.style.left   = (imgW - cw) / 2 + 'px';
+      frame.style.top    = (imgH - ch) / 2 + 'px';
+    };
+    src.src = e.target.result;
+    document.getElementById('portrait-modal').classList.add('active');
+  };
+  reader.readAsDataURL(file);
+  // Input leeren, damit die gleiche Datei erneut ausgewählt werden kann
+  document.getElementById('portrait-input').value = '';
+}
+
+function setupCropperInteractions() {
+  const frame = document.getElementById('crop-frame');
+
+  // Verschieben (Klick auf Rahmen-Mitte)
+  frame.addEventListener('mousedown', (e) => {
+    if (e.target.classList.contains('crop-handle')) return;
+    e.preventDefault();
+    const src = document.getElementById('cropper-source');
+    const startX = e.clientX, startY = e.clientY;
+    const startL = parseFloat(frame.style.left) || 0;
+    const startT = parseFloat(frame.style.top)  || 0;
+    const fw = parseFloat(frame.style.width);
+    const fh = parseFloat(frame.style.height);
+    const maxL = src.clientWidth - fw;
+    const maxT = src.clientHeight - fh;
+    const move = (ev) => {
+      const nl = Math.max(0, Math.min(maxL, startL + (ev.clientX - startX)));
+      const nt = Math.max(0, Math.min(maxT, startT + (ev.clientY - startY)));
+      frame.style.left = nl + 'px';
+      frame.style.top  = nt + 'px';
+    };
+    const up = () => {
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('mouseup', up);
+    };
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', up);
+  });
+
+  // Skalieren (Ecken-Handles) — Seitenverhältnis fix
+  frame.querySelectorAll('.crop-handle').forEach(handle => {
+    handle.addEventListener('mousedown', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const src = document.getElementById('cropper-source');
+      const dir = handle.classList[1]; // nw / ne / sw / se
+      const startX = e.clientX;
+      const startL = parseFloat(frame.style.left);
+      const startT = parseFloat(frame.style.top);
+      const startW = parseFloat(frame.style.width);
+      const startH = parseFloat(frame.style.height);
+      const move = (ev) => {
+        const dx = ev.clientX - startX;
+        const signX = (dir === 'se' || dir === 'ne') ? 1 : -1;
+        let nw = Math.max(20, startW + signX * dx);
+        // Bild-Grenzen einhalten
+        nw = Math.min(nw, src.clientWidth);
+        let nh = nw / PORTRAIT_AR;
+        nh = Math.min(nh, src.clientHeight);
+        nw = nh * PORTRAIT_AR;
+        let nl = startL, nt = startT;
+        if (dir === 'nw' || dir === 'sw') nl = startL + (startW - nw);
+        if (dir === 'nw' || dir === 'ne') nt = startT + (startH - nh);
+        // In Bildbereich klemmen
+        if (nl < 0) { nw += nl; nl = 0; nh = nw / PORTRAIT_AR; }
+        if (nt < 0) { nh += nt; nt = 0; nw = nh * PORTRAIT_AR; }
+        if (nl + nw > src.clientWidth)  nw = src.clientWidth  - nl;
+        if (nt + nh > src.clientHeight) nh = src.clientHeight - nt;
+        nh = nw / PORTRAIT_AR;
+        frame.style.width  = nw + 'px';
+        frame.style.height = nh + 'px';
+        frame.style.left   = nl + 'px';
+        frame.style.top    = nt + 'px';
+      };
+      const up = () => {
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup', up);
+      };
+      document.addEventListener('mousemove', move);
+      document.addEventListener('mouseup', up);
+    });
+  });
+}
+
+function applyCrop() {
+  const src = document.getElementById('cropper-source');
+  const frame = document.getElementById('crop-frame');
+  const scale = src.naturalWidth / src.clientWidth;
+  const sx = parseFloat(frame.style.left) * scale;
+  const sy = parseFloat(frame.style.top)  * scale;
+  const sw = parseFloat(frame.style.width)  * scale;
+  const sh = parseFloat(frame.style.height) * scale;
+  const canvas = document.createElement('canvas');
+  canvas.width  = Math.round(sw);
+  canvas.height = Math.round(sh);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(src, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/png');
+  const portrait = document.getElementById('portrait-img');
+  portrait.src = dataUrl;
+  document.getElementById('portrait-drop').classList.add('has-image');
+  closeCropper();
+  saveToLocalStorage();
+}
+
+function closeCropper() {
+  document.getElementById('portrait-modal').classList.remove('active');
+  const src = document.getElementById('cropper-source');
+  src.src = '';
 }
 
 // ---- Toolbar ----
@@ -641,8 +767,8 @@ const PALETTE_ITEMS = [
   { id: 'char-name',   label: 'Charaktername',    type: 'existing', group: 'Kopf' },
   { id: 'char-level',  label: 'Charakterlevel',   type: 'existing', group: 'Kopf' },
   { sel: '.portrait-drop', id: 'portrait-drop', label: 'Portrait',    type: 'existing', group: 'Kopf' },
-  { id: 'pal-class',       label: 'Klasse',               type: 'text',   group: 'Kopf', w: 18, h: 2.5, defaultLeft: '21.3%',  defaultTop: '4.48%' },
-  { id: 'pal-subclass',    label: 'Unterklasse',          type: 'text',   group: 'Kopf', w: 18, h: 2.5, defaultLeft: '61.09%', defaultTop: '4.58%' },
+  { id: 'pal-class',       label: 'Klasse',               type: 'text',   group: 'Kopf', w: 18, h: 2.5, defaultLeft: '20.85%', defaultTop: '5.03%', rot: -16 },
+  { id: 'pal-subclass',    label: 'Unterklasse',          type: 'text',   group: 'Kopf', w: 18, h: 2.5, defaultLeft: '60.88%', defaultTop: '5.14%', rot:  18 },
   { id: 'pal-species',     label: 'Spezies',              type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
   { id: 'pal-background',  label: 'Hintergrund',          type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
   { id: 'pal-alignment',   label: 'Ausrichtung',          type: 'text',   group: 'Kopf', w: 15, h: 2.5 },
@@ -816,6 +942,10 @@ function createPaletteField(item) {
   el.style.top  = item.defaultTop  || '2%';
   el.style.width = item.w + '%';
   if (!shapeTypes.includes(item.type) && item.h) el.style.height = item.h + '%';
+  if (item.rot != null) {
+    el.dataset.rotation = item.rot;
+    el.style.transform = `rotate(${item.rot}deg)`;
+  }
   return el;
 }
 

@@ -163,7 +163,7 @@ html, body {
   font-size: 20px; font-style: italic;
 }
 .field-name {
-  left: 27.75%; top: 6.39%;
+  left: 27.71%; top: 6.92%;
   width: 44%; height: 3.2%;
   font-size: 26px; font-style: italic;
 }
@@ -233,7 +233,18 @@ html, body {
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
 }
-.portrait-drop img { width: 100%; height: 100%; object-fit: cover; display: none; }
+.portrait-drop img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+  /* Achteckige Maske passt zur zentralen Rahmenkontur — verhindert Überstehen */
+  clip-path: polygon(
+    8% 0%, 92% 0%,
+    100% 12%, 100% 88%,
+    92% 100%, 8% 100%,
+    0% 88%, 0% 12%
+  );
+}
 .portrait-drop.has-image img { display: block; }
 .portrait-drop.has-image .portrait-hint { display: none; }
 .portrait-hint { color: #b0a68c; font-style: italic; font-size: 16px; pointer-events: none; }
@@ -496,6 +507,99 @@ body:has(.sheet.calibrate) .palette { display: block; }
 }
 .sheet.calibrate ~ .calibrate-hint,
 body:has(.sheet.calibrate) .calibrate-hint { display: block; }
+
+/* ============================================================
+   Portrait-Zuschneider (Modal)
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.cropper-panel {
+  background: #fdfaf1;
+  padding: 20px 24px;
+  border-radius: 8px;
+  max-width: 95vw;
+  max-height: 95vh;
+  overflow: auto;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+  color: var(--ink);
+}
+.cropper-panel h3 { margin: 0 0 6px; font-size: 18px; }
+.cropper-hint { font-size: 13px; color: #666; margin: 0 0 12px; line-height: 1.4; }
+.cropper-workspace {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  background: #333;
+  user-select: none;
+  line-height: 0;
+}
+#cropper-source {
+  display: block;
+  max-width: 80vw;
+  max-height: 65vh;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.crop-frame {
+  position: absolute;
+  border: 2px dashed #fff;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+  cursor: move;
+  box-sizing: border-box;
+}
+.crop-frame::before {
+  content: "";
+  position: absolute; inset: 0;
+  clip-path: polygon(
+    8% 0%, 92% 0%,
+    100% 12%, 100% 88%,
+    92% 100%, 8% 100%,
+    0% 88%, 0% 12%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+.crop-handle {
+  position: absolute;
+  width: 14px; height: 14px;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 2px;
+}
+.crop-handle.nw { top: -8px; left: -8px; cursor: nwse-resize; }
+.crop-handle.ne { top: -8px; right: -8px; cursor: nesw-resize; }
+.crop-handle.sw { bottom: -8px; left: -8px; cursor: nesw-resize; }
+.crop-handle.se { bottom: -8px; right: -8px; cursor: nwse-resize; }
+
+.cropper-actions {
+  display: flex; gap: 10px; margin-top: 14px;
+  justify-content: flex-end;
+}
+.cropper-actions button {
+  padding: 8px 16px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  background: #eee;
+}
+.cropper-actions button:hover { background: #ddd; }
+.cropper-actions #crop-apply {
+  background: #4a7c4e;
+  color: #fff;
+  border-color: #3a6a3e;
+}
+.cropper-actions #crop-apply:hover { background: #3a6a3e; }
 
 /* --- Print (A4) --- */
 @page { size: A4; margin: 0; }
