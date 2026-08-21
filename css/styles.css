@@ -268,33 +268,36 @@ html, body {
   background: #ffffff;
   pointer-events: none;
 }
-/* HP-Herz (links) */
-.mask-hp {
-  left: 24.0%; top: 40.5%;
-  width: 15%; height: 10%;
+/* Herz-Form (HP + TempHP): typische Doppelbogen-Herzform mit spitzem Boden */
+.mask-hp, .mask-temp-hp {
+  top: 40.8%;
+  width: 13.5%;
+  height: 9.5%;
   clip-path: polygon(
     50% 100%,
-    8% 55%, 0% 25%, 12% 5%, 30% 5%, 50% 25%,
-    70% 5%, 88% 5%, 100% 25%, 92% 55%
+    42% 94%, 32% 86%, 20% 76%, 10% 64%,
+    3% 50%, 0% 34%, 1% 22%, 6% 12%, 14% 4%,
+    24% 0%, 35% 3%, 45% 12%, 50% 22%,
+    55% 12%, 65% 3%, 76% 0%,
+    86% 4%, 94% 12%, 99% 22%, 100% 34%,
+    97% 50%, 90% 64%, 80% 76%, 68% 86%, 58% 94%
   );
 }
-/* AC-Schild (mitte) */
+.mask-hp      { left: 23.6%; }
+.mask-temp-hp { left: 62.4%; }
+
+/* AC-Schild: leicht gewölbter Oberrand, spitzer Boden */
 .mask-ac {
-  left: 45.0%; top: 42.0%;
-  width: 10%; height: 10%;
+  left: 44.8%; top: 41.2%;
+  width: 10.8%; height: 9.2%;
   clip-path: polygon(
-    0% 12%, 100% 12%, 100% 55%,
-    85% 82%, 50% 100%, 15% 82%, 0% 55%
-  );
-}
-/* Temp-HP-Herz (rechts) */
-.mask-temp-hp {
-  left: 61.0%; top: 40.5%;
-  width: 15%; height: 10%;
-  clip-path: polygon(
-    50% 100%,
-    8% 55%, 0% 25%, 12% 5%, 30% 5%, 50% 25%,
-    70% 5%, 88% 5%, 100% 25%, 92% 55%
+    3% 0%, 97% 0%,
+    100% 10%, 100% 40%,
+    97% 56%, 92% 70%,
+    82% 82%, 70% 90%, 58% 96%, 50% 100%,
+    42% 96%, 30% 90%, 18% 82%,
+    8% 70%, 3% 56%,
+    0% 40%, 0% 10%
   );
 }
 
