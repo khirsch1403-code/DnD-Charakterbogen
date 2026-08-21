@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>D&D Charakterbogen</title>
-  <link rel="stylesheet" href="css/styles.css?v=22" />
+  <link rel="stylesheet" href="css/styles.css?v=23" />
 </head>
 <body>
   <div class="toolbar no-print">
@@ -81,6 +81,13 @@
         <img id="portrait-img" alt="" />
         <span class="portrait-hint">Bild hierher ziehen oder klicken</span>
       </label>
+
+      <!-- Weiße Masken hinter HP-Herz, AC-Schild und Temp-HP-Herz.
+           Liegen ÜBER dem Portraitbild und UNTER den Zahlenfeldern,
+           sodass das Portrait dort nicht durchscheint. -->
+      <div class="shape-mask mask-hp"      aria-hidden="true"></div>
+      <div class="shape-mask mask-ac"      aria-hidden="true"></div>
+      <div class="shape-mask mask-temp-hp" aria-hidden="true"></div>
 
       <!-- Bewegung / Initiative / Größe / Passive Wahrnehmung -->
       <input type="text" class="field field-speed" id="speed" placeholder="9 m" data-save />
@@ -184,6 +191,6 @@
     </div>
   </div>
 
-  <script src="js/app.js?v=22"></script>
+  <script src="js/app.js?v=23"></script>
 </body>
 </html>

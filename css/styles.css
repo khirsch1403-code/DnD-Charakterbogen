@@ -261,6 +261,43 @@ html, body {
 .field-size    { left: 71.84%; top: 25.78%; width: 6%; height: 2.6%; font-size: 16px; }
 .field-passive { left: 71.84%; top: 35.79%; width: 6%; height: 2.6%; font-size: 16px; }
 
+/* --- Weiße Formmasken: verdecken das Portraitbild innerhalb der
+       Herz- und Schild-Formen, damit dort kein Bild durchscheint --- */
+.shape-mask {
+  position: absolute;
+  background: #ffffff;
+  pointer-events: none;
+}
+/* HP-Herz (links) */
+.mask-hp {
+  left: 24.0%; top: 40.5%;
+  width: 15%; height: 10%;
+  clip-path: polygon(
+    50% 100%,
+    8% 55%, 0% 25%, 12% 5%, 30% 5%, 50% 25%,
+    70% 5%, 88% 5%, 100% 25%, 92% 55%
+  );
+}
+/* AC-Schild (mitte) */
+.mask-ac {
+  left: 45.0%; top: 42.0%;
+  width: 10%; height: 10%;
+  clip-path: polygon(
+    0% 12%, 100% 12%, 100% 55%,
+    85% 82%, 50% 100%, 15% 82%, 0% 55%
+  );
+}
+/* Temp-HP-Herz (rechts) */
+.mask-temp-hp {
+  left: 61.0%; top: 40.5%;
+  width: 15%; height: 10%;
+  clip-path: polygon(
+    50% 100%,
+    8% 55%, 0% 25%, 12% 5%, 30% 5%, 50% 25%,
+    70% 5%, 88% 5%, 100% 25%, 92% 55%
+  );
+}
+
 /* --- HP / AC / TEMP HP --- */
 .field-hp-current { left: 26.61%; top: 46.03%; width: 5%; height: 2.4%; font-size: 20px; }
 .field-hp-max     { left: 31.28%; top: 46.04%; width: 5%; height: 2.4%; font-size: 20px; }
